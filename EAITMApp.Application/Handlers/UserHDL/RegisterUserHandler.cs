@@ -1,4 +1,5 @@
-﻿using EAITMApp.Application.Interfaces;
+﻿using EAITMApp.Application.DTOs.Auth;
+using EAITMApp.Application.Interfaces;
 using EAITMApp.Application.UseCases.Commands.UserCMD;
 using EAITMApp.Domain.Entities;
 using MediatR;
@@ -7,11 +8,10 @@ namespace EAITMApp.Application.Handlers.UserHDL
 {
     /// <summary>
     /// Handles the <see cref="RegisterUserCommand"/> to register a new user.
-    /// Validates that the username is unique, creates a User entity,
-    /// and persists it through the <see cref="IUserRepository"/>.
-    /// Returns the generated <see cref="User.Id"/>.
+    /// Validates uniqueness of the username, creates a User entity,
+    /// persists it via <see cref="IUserRepository"/>, and returns user data.
     /// </summary>
-    public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Guid>
+    public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, RegisterUserResponseDto>
     {
         private readonly IUserRepository _userRepository;
 
@@ -20,7 +20,7 @@ namespace EAITMApp.Application.Handlers.UserHDL
             _userRepository = repository;
         }
 
-        public async Task<Guid> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+        public async Task<RegisterUserResponseDto> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
             var existingUser = await _userRepository.GetByUsernameAsync(request.Username);
             if (existingUser != null)
@@ -30,7 +30,13 @@ namespace EAITMApp.Application.Handlers.UserHDL
 
             await _userRepository.AddAsync(user);
 
-            return user.Id;
+            return new RegisterUserResponseDto
+            {
+                Id = user.Id,
+                Username = user.Username,
+                Email = user.Email,
+                Role = user.Role
+            };
         }
     }
 }
@@ -38,4 +44,3 @@ namespace EAITMApp.Application.Handlers.UserHDL
 //TODO مستقبلي: تشفير كلمة المرور قبل إنشاء الكائن User.
 //TODO مستقبلي: إضافة Logging(مثلاً: تسجيل محاولة التسجيل).
 //TODO مستقبلي: إضافة Validations إضافية (Email format، طول Password).
-//إرجاع النتائج للـ API (مثلاً Id أو بيانات المستخدم المسجل)، من الأفضل استخدام DTO للـ Response

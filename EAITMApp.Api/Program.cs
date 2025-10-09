@@ -9,6 +9,8 @@ using EAITMApp.Infrastructure.Repositories.UserRepo;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using FluentValidation;
+using EAITMApp.Application.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +35,9 @@ if(repoType  == RepositoryType.Mongo)
         var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
         return new MongoTodoTaskRepository(settings);
     });
+
+    // Register IUserRepository if you want Mongo later
+    builder.Services.AddSingleton<IUserRepository, InMemoryUserRepository>();
 }
 else if (repoType == RepositoryType.Postgres)
 {
@@ -40,6 +45,7 @@ else if (repoType == RepositoryType.Postgres)
     options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
 
     builder.Services.AddScoped<ITodoTaskRepository, PostgresTodoTaskRepository>();
+    builder.Services.AddScoped<IUserRepository, InMemoryUserRepository>();
 }
 else
 {
@@ -51,6 +57,15 @@ Console.WriteLine($"[DEBUG] Repository type from config: {repoType}");
 
 // Register Repository
 builder.Services.AddControllers();
+
+// Register all Validators within the Application Assembly
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserDtoValidator>();
+
+// Enable automatic verification in Controllers
+builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
+{
+    options.SuppressModelStateInvalidFilter = false;
+});
 
 var app = builder.Build();
 

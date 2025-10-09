@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using EAITMApp.Application.DTOs.Auth;
+using MediatR;
 
 namespace EAITMApp.Application.UseCases.Commands.UserCMD
 {
@@ -7,19 +8,14 @@ namespace EAITMApp.Application.UseCases.Commands.UserCMD
     /// This command carries the required data to create a User entity.
     /// It is handled by <see cref="RegisterUserHandler"/>.
     /// </summary>
-    public record RegisterUserCommand : IRequest<Guid>
+    public record RegisterUserCommand(RegisterUserDto UserDto) : IRequest<RegisterUserResponseDto>
     {
-        public string Username { get; init; }
-        public string Email { get; init; }
-        public string Password { get; init; }
+        /// <summary>
+        /// Convenience properties to access DTO fields directly from the Command.
+        /// </summary>
+        public string Username => UserDto.Username;
+        public string Email => UserDto.Email;
+        public string Password => UserDto.Password;
         public string Role { get; init; } = "User";
-
-        public RegisterUserCommand(string username, string email, string password, string role = "User")
-        {
-            Username = username;
-            Email = email;
-            Password = password;
-            Role = role;
-        }
     }
 }
