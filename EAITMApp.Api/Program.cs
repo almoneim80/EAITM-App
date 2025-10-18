@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using FluentValidation;
 using EAITMApp.Application.Validators;
+using EAITMApp.Infrastructure.Security;
+using EAITMApp.Infrastructure.Memory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,11 +63,21 @@ builder.Services.AddControllers();
 // Register all Validators within the Application Assembly
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserDtoValidator>();
 
+
+// Bind Argon2 settings from appsettings.json
+builder.Services.Configure<Argon2Settings>(builder.Configuration.GetSection("Argon2Settings"));
+
 // Enable automatic verification in Controllers
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
 {
     options.SuppressModelStateInvalidFilter = false;
 });
+
+// Register Memory Management Service
+builder.Services.AddSingleton<ISecureMemoryService, SecureMemoryService>();
+
+// Encryption service registration
+builder.Services.AddSingleton<IEncryptionService, Argon2EncryptionService>();
 
 var app = builder.Build();
 

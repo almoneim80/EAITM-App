@@ -1,4 +1,4 @@
-﻿namespace EAITMApp.Infrastructure.Security
+﻿namespace EAITMApp.Application.Interfaces
 {
     /// <summary>
     /// Defines contract for password hashing and verification.

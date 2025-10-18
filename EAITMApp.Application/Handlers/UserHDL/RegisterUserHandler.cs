@@ -14,10 +14,12 @@ namespace EAITMApp.Application.Handlers.UserHDL
     public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, RegisterUserResponseDto>
     {
         private readonly IUserRepository _userRepository;
+        private readonly IEncryptionService _encryptionService;
 
-        public RegisterUserHandler(IUserRepository repository)
+        public RegisterUserHandler(IUserRepository repository, IEncryptionService encryptionService)
         {
             _userRepository = repository;
+            _encryptionService = encryptionService;
         }
 
         public async Task<RegisterUserResponseDto> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
@@ -26,7 +28,8 @@ namespace EAITMApp.Application.Handlers.UserHDL
             if (existingUser != null)
                 throw new InvalidOperationException("Username already exists");
 
-            var user = new User(request.Username, request.Email, request.Password, request.Role);
+            var hashedPassword = _encryptionService.HashPassword(request.Password);
+            var user = new User(request.Username, request.Email, hashedPassword, request.Role);
 
             await _userRepository.AddAsync(user);
 
