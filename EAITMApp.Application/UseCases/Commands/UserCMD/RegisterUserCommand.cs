@@ -10,9 +10,6 @@ namespace EAITMApp.Application.UseCases.Commands.UserCMD
     /// </summary>
     public record RegisterUserCommand(RegisterUserDto UserDto) : IRequest<RegisterUserResponseDto>
     {
-        /// <summary>
-        /// Convenience properties to access DTO fields directly from the Command.
-        /// </summary>
         public string Username => UserDto.Username;
         public string Email => UserDto.Email;
         public string Password => UserDto.Password;

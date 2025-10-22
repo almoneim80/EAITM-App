@@ -44,6 +44,4 @@ namespace EAITMApp.Application.Handlers.UserHDL
     }
 }
 
-//TODO مستقبلي: تشفير كلمة المرور قبل إنشاء الكائن User.
 //TODO مستقبلي: إضافة Logging(مثلاً: تسجيل محاولة التسجيل).
-//TODO مستقبلي: إضافة Validations إضافية (Email format، طول Password).
