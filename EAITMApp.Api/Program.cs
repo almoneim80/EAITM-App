@@ -1,86 +1,40 @@
-using EAITMApp.Api.Enums;
-using EAITMApp.Application.Interfaces;
 using EAITMApp.Application.UseCases.Commands.TaskCMD;
-using EAITMApp.Infrastructure.Configurations;
-using EAITMApp.Infrastructure.Data;
-using EAITMApp.Infrastructure.Repositories;
-using EAITMApp.Infrastructure.Repositories.TaskRepo;
-using EAITMApp.Infrastructure.Repositories.UserRepo;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using FluentValidation;
 using EAITMApp.Application.Validators;
-using EAITMApp.Infrastructure.Security;
-using EAITMApp.Infrastructure.Memory;
+using EAITMApp.Infrastructure;
+using EAITMApp.Domain.Common;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
+var services = builder.Services;
+var repoType = Enum.Parse<RepositoryType>(configuration["RepositoryType"] ?? "InMemory");
+
 
 // Add services.
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen();
 
 //MediatR
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(AddTodoTaskCommand).Assembly));
-
-// MongoDb settings
-builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
-
-
-// Read repository type
-var repoType = Enum.Parse<RepositoryType>(builder.Configuration["RepositoryType"] ?? "InMemory");
-
-if(repoType  == RepositoryType.Mongo)
-{
-    builder.Services.AddSingleton<ITodoTaskRepository>(sp =>
-    {
-        var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
-        return new MongoTodoTaskRepository(settings);
-    });
-
-    // Register IUserRepository if you want Mongo later
-    builder.Services.AddSingleton<IUserRepository, InMemoryUserRepository>();
-}
-else if (repoType == RepositoryType.Postgres)
-{
-    builder.Services.AddDbContext<TodoDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
-
-    builder.Services.AddScoped<ITodoTaskRepository, PostgresTodoTaskRepository>();
-    builder.Services.AddScoped<IUserRepository, InMemoryUserRepository>();
-}
-else
-{
-    builder.Services.AddSingleton<ITodoTaskRepository, InMemoryTodoTaskRepository>();
-    builder.Services.AddSingleton<IUserRepository, InMemoryUserRepository>();
-}
-
-Console.WriteLine($"[DEBUG] Repository type from config: {repoType}");
+services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(AddTodoTaskCommand).Assembly));
 
 // Register Repository
-builder.Services.AddControllers();
+services.AddControllers();
 
 // Register all Validators within the Application Assembly
-builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserDtoValidator>();
-
-
-// Bind Argon2 settings from appsettings.json
-builder.Services.Configure<Argon2Settings>(builder.Configuration.GetSection("Argon2Settings"));
+services.AddValidatorsFromAssemblyContaining<RegisterUserDtoValidator>();
 
 // Enable automatic verification in Controllers
-builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
+services.AddControllers().ConfigureApiBehaviorOptions(options =>
 {
     options.SuppressModelStateInvalidFilter = false;
 });
 
-// Register Memory Management Service
-builder.Services.AddSingleton<ISecureMemoryService, SecureMemoryService>();
+// Infrastructure DI
+services.AddInfrastructure(repoType, configuration);
 
-// Encryption service registration
-builder.Services.AddSingleton<IEncryptionService, Argon2EncryptionService>();
 
 var app = builder.Build();
-
 app.MapControllers();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
