@@ -10,10 +10,9 @@ namespace EAITMApp.Infrastructure.Factories
             _serviceProvider = serviceProvider;
         }
 
-        public T CreateRepository()
+        public IEnumerable<T> CreateRepository()
         {
-            var repo = _serviceProvider.GetRequiredService<T>();
-            return repo;
+            return _serviceProvider.GetServices<T>();
         }
     }
 }

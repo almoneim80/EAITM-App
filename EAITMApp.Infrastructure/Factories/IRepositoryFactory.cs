@@ -2,6 +2,6 @@
 {
     public interface IRepositoryFactory<T> where T : class
     {
-        T CreateRepository();
+        IEnumerable<T> CreateRepository();
     }
 }
