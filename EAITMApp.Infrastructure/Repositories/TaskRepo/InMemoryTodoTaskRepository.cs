@@ -11,7 +11,7 @@ namespace EAITMApp.Infrastructure.Repositories
         /// <inheritdoc/>
         public Task<TodoTask> AddAsync(TodoTask task)
         {
-            task.GetType().GetProperty("Id")?.SetValue(task, _nextId++);
+            Console.WriteLine("<------------- Add Task To Memory -------------->");
             _tasks.Add(task);
             return Task.FromResult(task);
         }

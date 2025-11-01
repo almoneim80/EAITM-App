@@ -19,6 +19,8 @@ namespace EAITMApp.Infrastructure.Repositories.TaskRepo
         /// <inheritdoc/>
         public async Task<TodoTask> AddAsync(TodoTask task)
         {
+            Console.WriteLine("<------------- Add Task To Mongo -------------->");
+
             await _collection.InsertOneAsync(task);
             return task;
         }

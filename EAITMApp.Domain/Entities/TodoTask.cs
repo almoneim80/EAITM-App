@@ -13,6 +13,7 @@
             if(string.IsNullOrEmpty(title))
                 throw new ArgumentNullException("Title can not be null");
 
+            Id = Guid.NewGuid();
             Title = title;
             Description = description ?? string.Empty;
             IsCompleted = false;

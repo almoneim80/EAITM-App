@@ -8,7 +8,6 @@ using EAITMApp.Domain.Common;
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var services = builder.Services;
-var repoType = Enum.Parse<RepositoryType>(configuration["RepositoryType"] ?? "InMemory");
 
 
 // Add services.
@@ -31,7 +30,7 @@ services.AddControllers().ConfigureApiBehaviorOptions(options =>
 });
 
 // Infrastructure DI
-services.AddInfrastructure(repoType, configuration);
+services.AddInfrastructure(configuration);
 
 
 var app = builder.Build();

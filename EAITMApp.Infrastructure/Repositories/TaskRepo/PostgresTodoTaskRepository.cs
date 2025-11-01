@@ -12,6 +12,7 @@ namespace EAITMApp.Infrastructure.Repositories.TaskRepo
         /// <inheritdoc/>
         public async Task<TodoTask> AddAsync(TodoTask task)
         {
+            Console.WriteLine("<------------- Add Task To Postgres -------------->");
             await _context.TodoTasks.AddAsync(task);
             await _context.SaveChangesAsync();
             return task;
