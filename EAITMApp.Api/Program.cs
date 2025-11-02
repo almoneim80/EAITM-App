@@ -3,7 +3,13 @@ using MediatR;
 using FluentValidation;
 using EAITMApp.Application.Validators;
 using EAITMApp.Infrastructure;
-using EAITMApp.Domain.Common;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson;
+
+
+// Serializer dedicated to standardizing the method of storing and reading Guid values in MongoDB.
+BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;

@@ -1,8 +1,12 @@
-﻿namespace EAITMApp.Domain.Entities
+﻿using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson;
+namespace EAITMApp.Domain.Entities
 {
     public class TodoTask
     {
-        public Guid Id { get; private set; } = Guid.NewGuid();
+        [BsonId]
+        [BsonRepresentation(BsonType.String)]
+        public Guid Id { get; private set; }
         public string Title { get; private set; }
         public string Description { get; private set; }
         public bool IsCompleted { get; private set; }

@@ -12,6 +12,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using EAITMApp.Infrastructure.Factories;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Bson.Serialization;
 
 namespace EAITMApp.Infrastructure
 {
@@ -24,6 +27,11 @@ namespace EAITMApp.Infrastructure
             services.Configure<StorageSettings>(storageSettingsSection);
             var storageSettings = storageSettingsSection.Get<StorageSettings>() ?? new StorageSettings();
 
+            // Load stores configs
+            services.Configure<MongoDbSettings>(configuration.GetSection("MongoDbSettings"));
+            services.AddDbContext<TodoDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("PostgresConnection")));
+
+
             // Common services
             services.AddSingleton<ISecureMemoryService, SecureMemoryService>();
             services.Configure<Argon2Settings>(configuration.GetSection("Argon2Settings"));
@@ -34,8 +42,6 @@ namespace EAITMApp.Infrastructure
             {
                 // Register all repositories (multi-storage mode)
 
-                services.Configure<MongoDbSettings>(configuration.GetSection("MongoDbSettings"));
-
                 services.AddSingleton<ITodoTaskRepository, InMemoryTodoTaskRepository>();
                 services.AddSingleton<ITodoTaskRepository>(sp =>
                 {
@@ -44,7 +50,7 @@ namespace EAITMApp.Infrastructure
                 });
 
                 // Register DbContext for Postgres
-                services.AddDbContext<TodoDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("PostgresConnection")));
+                
                 services.AddScoped<ITodoTaskRepository, PostgresTodoTaskRepository>();
                 services.AddSingleton<IUserRepository, InMemoryUserRepository>();
             }
@@ -54,7 +60,6 @@ namespace EAITMApp.Infrastructure
                 switch (storageSettings.DefaultStore)
                 {
                     case "Mongo":
-                        services.Configure<MongoDbSettings>(configuration.GetSection("MongoDbSettings"));
                         services.AddSingleton<ITodoTaskRepository>(sp =>
                         {
                             var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
@@ -63,7 +68,6 @@ namespace EAITMApp.Infrastructure
                         break;
 
                     case "Postgres":
-                        services.AddDbContext<TodoDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("PostgresConnection")));
                         services.AddScoped<ITodoTaskRepository>(sp =>
                         {
                             var dbContext = sp.GetRequiredService<TodoDbContext>();
