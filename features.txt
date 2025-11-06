@@ -1,0 +1,5 @@
+1. support 3 storge services : memory storgae , mongoDb, postgrs sql
+2. meory manegement: securely clear sensitive data from memory.
+3. support data encryption using  many algorithms: Argon2(currently)
+4. support FluentValidation
+5. support multiple data storage - in the same time
