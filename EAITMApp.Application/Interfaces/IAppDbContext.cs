@@ -46,6 +46,6 @@ namespace EAITMApp.Application.Interfaces
         /// Example DbSet for TodoTask entity.
         /// Add more DbSets as needed for your application.
         /// </summary>
-        DbSet<Domain.Entities.TodoTask> TodoTasks { get; set; }
+        DbSet<TodoTask> TodoTasks { get; set; }
     }
 }

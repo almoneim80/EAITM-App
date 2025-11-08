@@ -1,13 +1,12 @@
 ﻿using EAITMApp.Application.Interfaces;
 using EAITMApp.Domain.Entities;
-using EAITMApp.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace EAITMApp.Infrastructure.Repositories.TaskRepo
 {
-    public class PostgresTodoTaskRepository(TodoDbContext context) : ITodoTaskRepository
+    public class PostgresTodoTaskRepository(IAppDbContext context) : ITodoTaskRepository
     {
-        private readonly TodoDbContext _context = context;
+        private readonly IAppDbContext _context = context;
 
         /// <inheritdoc/>
         public async Task<TodoTask> AddAsync(TodoTask task)

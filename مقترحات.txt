@@ -1,0 +1,5 @@
+Cache
+Backup
+add Logging
+test performance in Multi-store mode.
+support Transaction/Consistency when write data in Multi-store mode
