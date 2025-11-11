@@ -21,14 +21,14 @@ namespace EAITMApp.Infrastructure
             // Load configuration sections
             // =========================
             var storageSettingsSection = configuration.GetSection("StorageSettings");
-            services.Configure<StorageSettings>(storageSettingsSection);
-            var storageSettings = storageSettingsSection.Get<StorageSettings>() ?? new StorageSettings();
+            services.Configure<DataStoresSettings>(storageSettingsSection);
+            var storageSettings = storageSettingsSection.Get<DataStoresSettings>() ?? new DataStoresSettings();
 
             services.Configure<MongoDbSettings>(configuration.GetSection("MongoDbSettings"));
             services.AddSingleton(sp => sp.GetRequiredService<IOptions<MongoDbSettings>>().Value);
 
-            services.AddDbContext<TodoDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("PostgresConnection")));
-            services.AddScoped<IAppDbContext, TodoDbContext>();
+            services.AddDbContext<PrimaryDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("PostgresConnection")));
+            services.AddScoped<IAppDbContext, PrimaryDbContext>();
 
             services.Configure<Argon2Settings>(configuration.GetSection("Argon2Settings"));
 
@@ -47,46 +47,13 @@ namespace EAITMApp.Infrastructure
             // =========================
             // Repository registration logic
             // =========================
-            if (storageSettings.EnableMultipleStores)
-            {
-                // ITodoTaskRepository
-                services.AddScoped<ITodoTaskRepository, InMemoryTodoTaskRepository>();
-                services.AddScoped<ITodoTaskRepository>(sp => 
-                { var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value; return new MongoTodoTaskRepository(settings); });
-                services.AddScoped<ITodoTaskRepository>(sp => 
-                { var dbContext = sp.GetRequiredService<IAppDbContext>(); return new PostgresTodoTaskRepository(dbContext); });
+            // ITodoTaskRepository
+            services.AddScoped<ITodoTaskRepository>(sp =>
+            { var dbContext = sp.GetRequiredService<IAppDbContext>(); return new TodoTaskRepository(dbContext); });
 
-
-
-                // IUserRepository
-                services.AddScoped<IUserRepository, InMemoryUserRepository>();
-                services.AddScoped<IUserRepository>(sp =>
-                { var dbContext = sp.GetRequiredService<IAppDbContext>(); return new PostgresUserRepository(dbContext);});
-
-            }
-            else
-            {
-                switch (storageSettings.DefaultStore)
-                {
-                    case "Mongo":
-                        services.AddScoped<ITodoTaskRepository>(sp =>
-                        { var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value; return new MongoTodoTaskRepository(settings);});
-                        break;
-
-                    case "Postgres":
-                        services.AddScoped<ITodoTaskRepository>(sp =>
-                        { var dbContext = sp.GetRequiredService<IAppDbContext>(); return new PostgresTodoTaskRepository(dbContext);});
-
-                        services.AddScoped<IUserRepository>(sp =>
-                        { var dbContext = sp.GetRequiredService<IAppDbContext>(); return new PostgresUserRepository(dbContext);});
-                        break;
-
-                    default: // InMemory
-                        services.AddScoped<ITodoTaskRepository, InMemoryTodoTaskRepository>();
-                        services.AddScoped<IUserRepository, InMemoryUserRepository>();
-                        break;
-                }
-            }
+            // IUserRepository
+            services.AddScoped<IUserRepository>(sp =>
+            { var dbContext = sp.GetRequiredService<IAppDbContext>(); return new UserRepository(dbContext); });
 
             return services;
         }

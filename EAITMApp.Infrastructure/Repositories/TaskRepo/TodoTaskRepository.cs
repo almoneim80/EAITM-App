@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EAITMApp.Infrastructure.Repositories.TaskRepo
 {
-    public class PostgresTodoTaskRepository(IAppDbContext context) : ITodoTaskRepository
+    public class TodoTaskRepository(IAppDbContext context) : ITodoTaskRepository
     {
         private readonly IAppDbContext _context = context;
 

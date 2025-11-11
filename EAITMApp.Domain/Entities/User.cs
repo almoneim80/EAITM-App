@@ -1,8 +1,13 @@
-﻿namespace EAITMApp.Domain.Entities
+﻿using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson;
+
+namespace EAITMApp.Domain.Entities
 {
     public class User
     {
-        public Guid Id { get; private set; } = Guid.NewGuid();
+        [BsonId]
+        [BsonRepresentation(BsonType.Binary)]
+        public Guid Id { get; private set; }
         public string Username { get; private set; }
         public string PasswordHash { get; private set; }
         public string Email { get; private set; }

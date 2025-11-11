@@ -15,7 +15,7 @@ namespace EAITMApp.Infrastructure.Migrations
                 name: "TodoTasks",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     Title = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     IsCompleted = table.Column<bool>(type: "boolean", nullable: false),

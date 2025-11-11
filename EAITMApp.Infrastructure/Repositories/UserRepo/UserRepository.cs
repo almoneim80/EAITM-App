@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EAITMApp.Infrastructure.Repositories.UserRepo
 {
-    public class PostgresUserRepository(IAppDbContext context) : IUserRepository
+    public class UserRepository(IAppDbContext context) : IUserRepository
     {
         private readonly IAppDbContext _context = context;
 

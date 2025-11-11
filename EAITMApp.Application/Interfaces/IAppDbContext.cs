@@ -43,9 +43,9 @@ namespace EAITMApp.Application.Interfaces
         ChangeTracker ChangeTracker { get; }
 
         /// <summary>
-        /// Example DbSet for TodoTask entity.
         /// Add more DbSets as needed for your application.
         /// </summary>
         DbSet<TodoTask> TodoTasks { get; set; }
+        DbSet<User> Users { get; set; }
     }
 }

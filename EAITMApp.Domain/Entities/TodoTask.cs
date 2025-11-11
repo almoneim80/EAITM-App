@@ -5,7 +5,8 @@ namespace EAITMApp.Domain.Entities
     public class TodoTask
     {
         [BsonId]
-        [BsonRepresentation(BsonType.String)]
+        [BsonRepresentation(BsonType.Binary)]
+        [BsonGuidRepresentation(GuidRepresentation.Standard)]
         public Guid Id { get; private set; }
         public string Title { get; private set; }
         public string Description { get; private set; }
