@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace EAITMApp.Infrastructure.Migrations
 {
-    [DbContext(typeof(PrimaryDbContext))]
+    [DbContext(typeof(WriteDbContext))]
     [Migration("20251109173056_CreateUserTable")]
     partial class CreateUserTable
     {

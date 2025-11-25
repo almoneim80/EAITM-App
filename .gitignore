@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+System Design Document (SDD).txt
+features.txt
+reco.md
+DB-Info.txt

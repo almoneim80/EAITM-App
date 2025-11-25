@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EAITMApp.Infrastructure.Repositories.UserRepo
 {
-    public class UserRepository(IAppDbContext context) : IUserRepository
+    public class UserRepository(IWriteDbContext context) : IUserRepository
     {
-        private readonly IAppDbContext _context = context;
+        private readonly IWriteDbContext _context = context;
 
         public async Task AddAsync(User user)
         {

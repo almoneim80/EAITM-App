@@ -1,8 +1,30 @@
 ﻿namespace EAITMApp.Infrastructure.Repositories.Settings
 {
+    /// <summary>
+    /// Default implementation of <see cref="IDatabaseConnectionSettings"/>.
+    /// Can be bound directly from configuration using the Options pattern.
+    /// </summary>
     public class DatabaseConnectionSettings : IDatabaseConnectionSettings
     {
-        public string Type { get; set; } = "Postgres";
-        public Dictionary<string, object> Options { get; set; } = new();
+        /// <inheritdoc/>
+        public string ProviderType { get; set; } = string.Empty;
+
+        /// <inheritdoc/>
+        public string Host { get; set; } = string.Empty;
+
+        /// <inheritdoc/>
+        public int Port { get; set; } = 0;
+
+        /// <inheritdoc/>
+        public string Database { get; set; } = string.Empty;
+
+        /// <inheritdoc/>
+        public string Username { get; set; } = string.Empty;
+
+        /// <inheritdoc/>
+        public string Password { get; set; } = string.Empty;
+
+        /// <inheritdoc/>
+        public Dictionary<string, string> AdditionalSettings { get; set; } = new();
     }
 }

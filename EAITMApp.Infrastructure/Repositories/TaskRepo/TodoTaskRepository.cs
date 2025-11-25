@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EAITMApp.Infrastructure.Repositories.TaskRepo
 {
-    public class TodoTaskRepository(IAppDbContext context) : ITodoTaskRepository
+    public class TodoTaskRepository(IWriteDbContext context) : ITodoTaskRepository
     {
-        private readonly IAppDbContext _context = context;
+        private readonly IWriteDbContext _context = context;
 
         /// <inheritdoc/>
         public async Task<TodoTask> AddAsync(TodoTask task)
