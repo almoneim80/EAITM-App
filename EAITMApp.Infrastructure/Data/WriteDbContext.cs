@@ -3,8 +3,6 @@ using EAITMApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EAITMApp.Infrastructure.Data
 {

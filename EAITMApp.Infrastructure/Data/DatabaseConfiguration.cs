@@ -1,6 +1,7 @@
 ﻿using EAITMApp.Infrastructure.Repositories.Settings.Providers;
 using EAITMApp.Infrastructure.Repositories.Settings;
 using Microsoft.Extensions.DependencyInjection;
+using EAITMApp.Infrastructure.Factories;
 
 namespace EAITMApp.Infrastructure.Data
 {
@@ -12,24 +13,18 @@ namespace EAITMApp.Infrastructure.Data
         /// </summary>
         /// <param name="services">DI service collection.</param>
         /// <param name="dataStores">Strongly-typed data stores settings.</param>
-        public static void ConfigureDatabases(IServiceCollection services, DataStoresSettings dataStores)
+        public static void ConfigureDatabases(
+                    IServiceCollection services,
+                    DataStoresSettings dataStores,
+                    IDatabaseProviderFactory factory)   // تمرير المصنع من DI
         {
             if (dataStores == null) throw new ArgumentNullException(nameof(dataStores));
 
-            // Ensure write and read database types match
-            if (!string.Equals(dataStores.WriteDatabaseSettings.ProviderType,
-                               dataStores.ReadDatabaseSettings.ProviderType,
-                               StringComparison.OrdinalIgnoreCase))
-            {
-                throw new InvalidOperationException(
-                    $"Read database type ({dataStores.ReadDatabaseSettings.ProviderType}) " +
-                    $"must match Write database type ({dataStores.WriteDatabaseSettings.ProviderType})."
-                );
-            }
-
-            // Resolve the database provider factory from DI (or create a default one)
-            var factory = new DatabaseProviderFactory();
-            factory.RegisterProvider("postgres", new PostgresProvider());
+            if (!string.Equals(
+                    dataStores.WriteDatabaseSettings.ProviderType,
+                    dataStores.ReadDatabaseSettings.ProviderType,
+                    StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("Database types must match.");
 
             // Configure Write DbContext
             factory.GetProvider(dataStores.WriteDatabaseSettings.ProviderType)
@@ -40,4 +35,5 @@ namespace EAITMApp.Infrastructure.Data
                    .RegisterRead(services, dataStores.ReadDatabaseSettings);
         }
     }
+}
 }

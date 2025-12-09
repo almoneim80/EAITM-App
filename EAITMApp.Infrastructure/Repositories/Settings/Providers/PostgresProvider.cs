@@ -41,10 +41,21 @@ namespace EAITMApp.Infrastructure.Repositories.Settings.Providers
         /// <exception cref="InvalidOperationException">Thrown if connection string is missing or invalid.</exception>
         private static string GetConnectionString(IDatabaseConnectionSettings settings)
         {
-            if (settings.Options.TryGetValue("ConnectionString", out var connObj) && connObj is string connStr)
-                return connStr;
+            var builder = new Npgsql.NpgsqlConnectionStringBuilder
+            {
+                Host = settings.Host,
+                Port = settings.Port,
+                Database = settings.Database,
+                Username = settings.Username,
+                Password = settings.Password
+            };
 
-            throw new InvalidOperationException("Postgres connection string not found in settings.");
+            foreach (var option in settings.AdditionalSettings)
+            {
+                builder[option.Key] = option.Value;
+            }
+
+            return builder.ConnectionString;
         }
     }
 }

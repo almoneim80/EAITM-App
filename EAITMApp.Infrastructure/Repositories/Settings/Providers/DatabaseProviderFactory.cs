@@ -1,17 +1,8 @@
 ﻿using EAITMApp.Application.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
+using EAITMApp.Infrastructure.Factories;
 
 namespace EAITMApp.Infrastructure.Repositories.Settings.Providers
 {
-    /// <summary>
-    /// Factory for creating database providers in a flexible and testable way.
-    /// Supports DI, lazy initialization, and extensibility.
-    /// </summary>
-    public interface IDatabaseProviderFactory
-    {
-        IDatabaseProvider GetProvider(string dbType);
-    }
-
     public class DatabaseProviderFactory : IDatabaseProviderFactory
     {
         private readonly IDictionary<string, IDatabaseProvider> _providers;
@@ -61,23 +52,6 @@ namespace EAITMApp.Infrastructure.Repositories.Settings.Providers
                 return provider;
 
             throw new NotSupportedException($"Database provider for '{dbType}' is not supported.");
-        }
-    }
-
-    /// <summary>
-    /// Extension method to register default providers via DI.
-    /// </summary>
-    public static class ServiceCollectionExtensions
-    {
-        public static IServiceCollection AddDatabaseProviders(this IServiceCollection services)
-        {
-            var factory = new DatabaseProviderFactory();
-
-            // Register default providers
-            factory.RegisterProvider("postgres", new PostgresProvider());
-
-            services.AddSingleton<IDatabaseProviderFactory>(factory);
-            return services;
         }
     }
 }
