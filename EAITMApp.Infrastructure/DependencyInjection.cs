@@ -6,8 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using EAITMApp.Infrastructure.Repositories.TaskRepo;
 using EAITMApp.Infrastructure.Repositories.UserRepo;
-using EAITMApp.Infrastructure.Factories;
-using EAITMApp.Infrastructure.Repositories.Settings.Providers;
 
 namespace EAITMApp.Infrastructure
 {
@@ -18,20 +16,14 @@ namespace EAITMApp.Infrastructure
             // =========================
             // Load configuration sections
             // =========================
-
             var dataStoresSection = configuration.GetSection("DataStores");
             services.Configure<DataStoresSettings>(dataStoresSection);
             var dataStores = dataStoresSection.Get<DataStoresSettings>() ?? new DataStoresSettings();
 
             // =========================
-            // Configure databases (Write & Read) using DatabaseConfiguration
+            // configure databases
             // =========================
-            var factory = new DatabaseProviderFactory();
-            factory.RegisterProvider("postgres", new PostgresProvider());
-            services.AddSingleton<IDatabaseProviderFactory>(factory);
-
-            // تكوين قواعد البيانات باستخدام المصنع المسجل
-            DatabaseConfiguration.ConfigureDatabases(services, dataStores, factory);
+            DbContextRegistrar.ConfigureDatabases(services, dataStores);
 
             // =========================
             // Security settings

@@ -15,39 +15,24 @@ namespace EAITMApp.Infrastructure.Data
         public WriteDbContext(DbContextOptions<WriteDbContext> options)
             : base(options) { }
 
-        /// <summary>
-        /// Provides access to a DbSet for a given entity type.
-        /// Generic implementation allows adding new entities without modifying the DbContext.
-        /// </summary>
-        /// <typeparam name="TEntity">Entity type.</typeparam>
-        /// <returns>DbSet for the entity.</returns>
+        /// <inheritdoc/>
         public DbSet<TEntity> Set<TEntity>() where TEntity : class => base.Set<TEntity>();
 
-        /// <summary>
-        /// Saves all changes asynchronously.
-        /// </summary>
+        /// <inheritdoc/>
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
             => base.SaveChangesAsync(cancellationToken);
 
-        /// <summary>
-        /// Saves all changes asynchronously with option to accept all changes on success.
-        /// </summary>
+        /// <inheritdoc/>
         public Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
             => base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
 
-        /// <summary>
-        /// Provides access to database-specific operations.
-        /// </summary>
+        /// <inheritdoc/>
         public new DatabaseFacade Database => base.Database;
 
-        /// <summary>
-        /// Provides access to change tracking information.
-        /// </summary>
+        /// <inheritdoc/>
         public new ChangeTracker ChangeTracker => base.ChangeTracker;
 
-        /// <summary>
-        /// Common DbSets can be defined here for convenience, optional for CQRS/Generic usage.
-        /// </summary>
+        /// <inheritdoc/>
         public DbSet<TodoTask> TodoTasks { get; set; } = null!;
         public DbSet<User> Users { get; set; } = null!;
 
@@ -55,25 +40,8 @@ namespace EAITMApp.Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure TodoTask entity
-            modelBuilder.Entity<TodoTask>(builder =>
-            {
-                builder.HasKey(t => t.Id);
-                builder.Property(t => t.Id)
-                       .HasColumnType("uuid")
-                       .HasDefaultValueSql("gen_random_uuid()");
-            });
-
-            // Configure User entity
-            modelBuilder.Entity<User>(builder =>
-            {
-                builder.HasKey(u => u.Id);
-                builder.Property(u => u.Id)
-                       .HasColumnType("uuid")
-                       .HasDefaultValueSql("gen_random_uuid()");
-            });
-
-            // Future entities can be configured here without modifying the DbContext interface
+            // Apply entity configurations
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(WriteDbContext).Assembly);
         }
     }
 }
