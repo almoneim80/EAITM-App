@@ -1,10 +1,10 @@
-﻿using EAITMApp.Application.Interfaces;
+﻿using EAITMApp.Application.Persistence;
 using EAITMApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace EAITMApp.Infrastructure.Data
+namespace EAITMApp.Infrastructure.Persistence
 {
     /// <summary>
     /// EF Core DbContext optimized for write operations.

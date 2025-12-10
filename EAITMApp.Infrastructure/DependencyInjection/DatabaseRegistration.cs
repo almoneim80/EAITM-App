@@ -1,11 +1,13 @@
-﻿using EAITMApp.Infrastructure.Repositories.Settings;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using EAITMApp.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using EAITMApp.Application.Persistence;
+using EAITMApp.Infrastructure.Persistence;
+using EAITMApp.Infrastructure.Settings;
 
-namespace EAITMApp.Infrastructure.Data
+namespace EAITMApp.Infrastructure.DependencyInjection
 {
-    public static class DbContextRegistrar
+    public static class DatabaseRegistration
     {
         /// <summary>
         /// Configures both write (primary) and read (replica) databases using DI and the provider factory.

@@ -1,4 +1,6 @@
-﻿namespace EAITMApp.Infrastructure.Repositories.Settings
+﻿using EAITMApp.Application.Persistence;
+
+namespace EAITMApp.Infrastructure.Settings
 {
     /// <summary>
     /// Default implementation of <see cref="IDatabaseConnectionSettings"/>.

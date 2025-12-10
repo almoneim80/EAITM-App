@@ -1,13 +1,13 @@
 ﻿using EAITMApp.Application.Interfaces;
-using EAITMApp.Infrastructure.Data;
-using EAITMApp.Infrastructure.Repositories.Settings;
 using EAITMApp.Infrastructure.Security;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using EAITMApp.Infrastructure.Repositories.TaskRepo;
 using EAITMApp.Infrastructure.Repositories.UserRepo;
+using EAITMApp.Application.Persistence;
+using EAITMApp.Infrastructure.Settings;
 
-namespace EAITMApp.Infrastructure
+namespace EAITMApp.Infrastructure.DependencyInjection
 {
     public static class DependencyInjection
     {
@@ -23,7 +23,7 @@ namespace EAITMApp.Infrastructure
             // =========================
             // configure databases
             // =========================
-            DbContextRegistrar.ConfigureDatabases(services, dataStores);
+            DatabaseRegistration.ConfigureDatabases(services, dataStores);
 
             // =========================
             // Security settings

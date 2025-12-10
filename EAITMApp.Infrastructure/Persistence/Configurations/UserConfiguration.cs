@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace EAITMApp.Infrastructure.Data.Configurations
+namespace EAITMApp.Infrastructure.Persistence.Configurations
 {
     internal class UserConfiguration : IEntityTypeConfiguration<User>
     {

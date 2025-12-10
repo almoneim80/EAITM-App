@@ -1,4 +1,4 @@
-﻿namespace EAITMApp.Infrastructure.Repositories.Settings
+﻿namespace EAITMApp.Application.Persistence
 {
     /// <summary>
     /// Represents the settings required to connect to a database.

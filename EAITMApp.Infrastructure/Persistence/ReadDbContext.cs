@@ -2,7 +2,7 @@
 using EAITMApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace EAITMApp.Infrastructure.Data
+namespace EAITMApp.Infrastructure.Persistence
 {
     /// <summary>
     /// EF Core DbContext optimized for read-only operations.

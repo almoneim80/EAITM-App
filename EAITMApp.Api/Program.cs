@@ -2,10 +2,10 @@ using EAITMApp.Application.UseCases.Commands.TaskCMD;
 using MediatR;
 using FluentValidation;
 using EAITMApp.Application.Validators;
-using EAITMApp.Infrastructure;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson;
+using EAITMApp.Infrastructure.DependencyInjection;
 
 
 // Serializer dedicated to standardizing the method of storing and reading Guid values in MongoDB.

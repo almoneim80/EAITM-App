@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace EAITMApp.Application.Interfaces
+namespace EAITMApp.Application.Persistence
 {
     /// <summary>
     /// Represents a write-only DbContext for EF Core, optimized for CQRS and large-scale applications.

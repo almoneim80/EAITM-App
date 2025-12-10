@@ -1,9 +1,8 @@
 ﻿using EAITMApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Reflection.Emit;
 
-namespace EAITMApp.Infrastructure.Data.Configurations
+namespace EAITMApp.Infrastructure.Persistence.Configurations
 {
     public class TodoTaskConfiguration : IEntityTypeConfiguration<TodoTask>
     {

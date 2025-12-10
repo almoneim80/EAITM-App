@@ -1,6 +1,6 @@
 ﻿using EAITMApp.Domain.Entities;
 
-namespace EAITMApp.Application.Interfaces
+namespace EAITMApp.Application.Persistence
 {
     public interface IUserRepository
     {
