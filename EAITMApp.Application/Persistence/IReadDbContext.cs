@@ -1,7 +1,7 @@
 ﻿using EAITMApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace EAITMApp.Application.Interfaces
+namespace EAITMApp.Application.Persistence
 {
     /// <summary>
     /// Represents a read-only DbContext for EF Core, optimized for CQRS/Replication scenarios.

@@ -27,6 +27,12 @@ namespace EAITMApp.Infrastructure.Settings
         public string Password { get; set; } = string.Empty;
 
         /// <inheritdoc/>
+        public Npgsql.SslMode SslMode { get; set; } = Npgsql.SslMode.Require;
+
+        /// <inheritdoc/>
+        public bool Pooling { get; set; } = true;
+
+        /// <inheritdoc/>
         public Dictionary<string, string> AdditionalSettings { get; set; } = new();
     }
 }

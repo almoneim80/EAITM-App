@@ -1,4 +1,4 @@
-﻿using EAITMApp.Application.Interfaces;
+﻿using EAITMApp.Application.Persistence;
 using EAITMApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 

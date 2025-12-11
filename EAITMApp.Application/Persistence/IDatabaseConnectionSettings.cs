@@ -37,6 +37,16 @@
         string Password { get; set; }
 
         /// <summary>
+        /// The SSL mode for the connection.
+        /// </summary>
+        Npgsql.SslMode SslMode { get; set; }
+
+        /// <summary>
+        /// The pooling behavior for the connection.
+        /// </summary>
+        bool Pooling { get; set; }
+
+        /// <summary>
         /// Optional additional settings specific to the provider.
         /// </summary>
         Dictionary<string, string> AdditionalSettings { get; set; }
