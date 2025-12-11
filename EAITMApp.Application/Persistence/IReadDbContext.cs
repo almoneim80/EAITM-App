@@ -1,5 +1,4 @@
-﻿using EAITMApp.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace EAITMApp.Application.Persistence
 {
@@ -25,12 +24,5 @@ namespace EAITMApp.Application.Persistence
         /// <returns>The entity if found; otherwise, null.</returns>
         Task<TEntity?> FindAsync<TEntity>(object[] keyValues, CancellationToken cancellationToken = default)
             where TEntity : class;
-
-        /// <summary>
-        /// Provides access to common DbSets for convenience.
-        /// These are optional and can be extended as needed.
-        /// </summary>
-        DbSet<TodoTask> TodoTasks { get; }
-        DbSet<User> Users { get; }
     }
 }

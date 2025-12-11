@@ -1,8 +1,6 @@
 ﻿using EAITMApp.Application.Persistence;
 using EAITMApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace EAITMApp.Infrastructure.Persistence
 {
@@ -23,18 +21,8 @@ namespace EAITMApp.Infrastructure.Persistence
             => base.SaveChangesAsync(cancellationToken);
 
         /// <inheritdoc/>
-        public Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
-            => base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-
-        /// <inheritdoc/>
-        public new DatabaseFacade Database => base.Database;
-
-        /// <inheritdoc/>
-        public new ChangeTracker ChangeTracker => base.ChangeTracker;
-
-        /// <inheritdoc/>
-        public DbSet<TodoTask> TodoTasks { get; set; } = null!;
-        public DbSet<User> Users { get; set; } = null!;
+        public DbSet<TodoTask> TodoTasks { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

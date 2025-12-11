@@ -25,27 +25,32 @@ namespace EAITMApp.Infrastructure.DependencyInjection
             
 
             // WriteDbContext
-            services.AddDbContext<WriteDbContext>(options => options.UseNpgsql(GetWriteConnStr(settings)));
+            services.AddDbContext<WriteDbContext>(options => options.UseNpgsql(BuildConnectionString(settings.WriteDatabaseSettings)));
             services.AddScoped<IWriteDbContext, WriteDbContext>();
 
             // ReadDbContext
-            services.AddDbContext<ReadDbContext>(options => options.UseNpgsql(GetReadConnStr(settings)));
+            services.AddDbContext<ReadDbContext>(options =>
+            {
+                options.UseNpgsql(BuildConnectionString(settings.ReadDatabaseSettings));
+                options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+            });
             services.AddScoped<IReadDbContext, ReadDbContext>();
         }
 
-        private static string GetWriteConnStr(DataStoresSettings settings)
+        /// <summary>
+        /// Builds a connection string from the provided settings.
+        /// </summary>
+        private static string BuildConnectionString(IDatabaseConnectionSettings s)
         {
-            var s = settings.WriteDatabaseSettings;
             if(string.IsNullOrWhiteSpace(s.Host) ||
                s.Port <= 0 ||
-               string.IsNullOrEmpty(s.Database) ||
-               string.IsNullOrEmpty(s.Username) ||
-               string.IsNullOrEmpty(s.Password) ||
-               s.Pooling == false) 
+               string.IsNullOrWhiteSpace(s.Database) ||
+               string.IsNullOrWhiteSpace(s.Username) ||
+               string.IsNullOrWhiteSpace(s.Password)) 
             {
                 throw new 
                     InvalidOperationException("One or more required database settings are missing " +
-                    "or invalid (Host, Port, Database, Username, Password, Pooling).");
+                    "or invalid (Host, Port, Database, Username, Password).");
             }
 
             var builder = new NpgsqlConnectionStringBuilder
@@ -59,28 +64,17 @@ namespace EAITMApp.Infrastructure.DependencyInjection
                 Pooling = s.Pooling
             };
 
-            return builder.ConnectionString;
-        }
-
-        private static string GetReadConnStr(DataStoresSettings settings)
-        {
-            if (string.IsNullOrEmpty(settings.ReadDatabaseSettings.Host) |
-               settings.ReadDatabaseSettings.Port <= 0 |
-               string.IsNullOrEmpty(settings.ReadDatabaseSettings.Database) |
-               string.IsNullOrEmpty(settings.ReadDatabaseSettings.Username) |
-               string.IsNullOrEmpty(settings.ReadDatabaseSettings.Password))
+            foreach (var kvp in s.AdditionalSettings)
             {
-                throw new InvalidOperationException("Database settings are invalid.");
+                if (builder.ContainsKey(kvp.Key))
+                {
+                    continue;
+                }
+
+                builder[kvp.Key] = kvp.Value;
             }
 
-            return
-                $"Host={settings.ReadDatabaseSettings.Host};" +
-                $"Port={settings.ReadDatabaseSettings.Port};" +
-                $"Database={settings.ReadDatabaseSettings.Database};" +
-                $"Username={settings.ReadDatabaseSettings.Username};" +
-                $"Password={settings.ReadDatabaseSettings.Password}" +
-                $"SslMode={settings.ReadDatabaseSettings.AdditionalSettings["SslMode"]}" +
-                $"Pooling={settings.ReadDatabaseSettings.AdditionalSettings["Pooling"]}";
+            return builder.ConnectionString;
         }
     }
 }

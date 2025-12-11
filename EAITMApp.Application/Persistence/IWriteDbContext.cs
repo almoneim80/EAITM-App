@@ -1,7 +1,4 @@
-﻿using EAITMApp.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace EAITMApp.Application.Persistence
 {
@@ -24,29 +21,5 @@ namespace EAITMApp.Application.Persistence
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>The number of state entries written to the database.</returns>
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Saves all changes made in this context with the option to accept all changes automatically.
-        /// </summary>
-        /// <param name="acceptAllChangesOnSuccess">Whether to accept changes automatically.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>The number of state entries written to the database.</returns>
-        Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Provides access to database-specific operations, such as transactions or raw SQL execution.
-        /// </summary>
-        DatabaseFacade Database { get; }
-
-        /// <summary>
-        /// Provides access to change tracking information for entities in this context.
-        /// </summary>
-        ChangeTracker ChangeTracker { get; }
-
-        /// <summary>
-        /// Optional: Define common DbSets here for convenience, but avoid hardcoding entity types in large-scale projects.
-        /// </summary>
-        DbSet<TodoTask> TodoTasks { get; set; }
-        DbSet<User> Users { get; set; }
     }
 }
