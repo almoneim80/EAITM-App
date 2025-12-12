@@ -7,9 +7,9 @@ namespace EAITMApp.Application.Handlers.TaskHDL
 {
     public class GetTaskByIdHandler : IRequestHandler<GetTaskByIdQuery, TodoTask?>
     {
-        private readonly ITodoTaskRepository _repository;
+        private readonly IReadTodoTaskRepository _repository;
 
-        public GetTaskByIdHandler(ITodoTaskRepository repository)
+        public GetTaskByIdHandler(IReadTodoTaskRepository repository)
         {
             _repository = repository;
         }

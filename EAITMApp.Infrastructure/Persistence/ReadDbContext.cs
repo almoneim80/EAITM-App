@@ -1,5 +1,4 @@
 ﻿using EAITMApp.Application.Persistence;
-using EAITMApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace EAITMApp.Infrastructure.Persistence
@@ -16,15 +15,10 @@ namespace EAITMApp.Infrastructure.Persistence
         public DbSet<TEntity> Set<TEntity>() where TEntity : class => base.Set<TEntity>();
 
         /// <inheritdoc/>
-        public DbSet<TodoTask> TodoTasks { get; set; }
-        public DbSet<User> Users { get; set; }
-
-        /// <inheritdoc/>
         public Task<TEntity?> FindAsync<TEntity>(object[] keyValues, CancellationToken cancellationToken = default)
             where TEntity : class
         {
-            var result = base.FindAsync<TEntity>(keyValues, cancellationToken);
-            return result.AsTask();
+            return base.FindAsync<TEntity>(keyValues, cancellationToken).AsTask();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -5,9 +5,9 @@ using MediatR;
 
 namespace EAITMApp.Application.Handlers.TaskHDL
 {
-    public class GetAllTasksHandler(ITodoTaskRepository repository) : IRequestHandler<GetAllTasksQuery, List<TodoTask>>
+    public class GetAllTasksHandler(IReadTodoTaskRepository repository) : IRequestHandler<GetAllTasksQuery, List<TodoTask>>
     {
-        private readonly ITodoTaskRepository _repository = repository;
+        private readonly IReadTodoTaskRepository _repository = repository;
         public async Task<List<TodoTask>> Handle(GetAllTasksQuery request, CancellationToken cancellationToken)
         {
             return await _repository.GetAllAsync();

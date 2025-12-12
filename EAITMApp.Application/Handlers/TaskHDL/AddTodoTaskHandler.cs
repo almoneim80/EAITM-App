@@ -7,9 +7,9 @@ namespace EAITMApp.Application.Handlers.TaskHDL
 {
     public class AddTodoTaskHandler : IRequestHandler<AddTodoTaskCommand, TodoTask>
     {
-        private readonly IEnumerable<ITodoTaskRepository> _repositories;
+        private readonly IEnumerable<IWriteTodoTaskRepository> _repositories;
 
-        public AddTodoTaskHandler(IEnumerable<ITodoTaskRepository> repositories)
+        public AddTodoTaskHandler(IEnumerable<IWriteTodoTaskRepository> repositories)
         {
             _repositories = repositories;
         }

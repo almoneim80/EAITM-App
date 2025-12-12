@@ -1,5 +1,4 @@
 ﻿using EAITMApp.Application.Persistence;
-using EAITMApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace EAITMApp.Infrastructure.Persistence
@@ -19,10 +18,6 @@ namespace EAITMApp.Infrastructure.Persistence
         /// <inheritdoc/>
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
             => base.SaveChangesAsync(cancellationToken);
-
-        /// <inheritdoc/>
-        public DbSet<TodoTask> TodoTasks { get; set; }
-        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

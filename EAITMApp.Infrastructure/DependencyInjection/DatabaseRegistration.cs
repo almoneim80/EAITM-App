@@ -66,10 +66,10 @@ namespace EAITMApp.Infrastructure.DependencyInjection
 
             foreach (var kvp in s.AdditionalSettings)
             {
-                if (builder.ContainsKey(kvp.Key))
-                {
-                    continue;
-                }
+                //if (builder.ContainsKey(kvp.Key))
+                //{
+                //    continue;
+                //}
 
                 builder[kvp.Key] = kvp.Value;
             }

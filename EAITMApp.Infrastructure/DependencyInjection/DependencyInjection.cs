@@ -45,10 +45,10 @@ namespace EAITMApp.Infrastructure.DependencyInjection
             // =========================
             // Repository registration logic
             // =========================
-            services.AddScoped<ITodoTaskRepository>(sp =>
+            services.AddScoped<IReadTodoTaskRepository>(sp =>
             {
                 var dbContext = sp.GetRequiredService<IWriteDbContext>();
-                return new TodoTaskRepository(dbContext);
+                return new TodoTaskReadRepository(dbContext);
             });
 
             services.AddScoped<IUserRepository>(sp =>

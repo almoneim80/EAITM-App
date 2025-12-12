@@ -6,9 +6,9 @@ namespace EAITMApp.Application.Handlers.TaskHDL
 {
     public class DeleteTodoTaskHandler : IRequestHandler<DeleteTodoTaskCommand, bool>
     {
-        private readonly ITodoTaskRepository _repository;
+        private readonly IReadTodoTaskRepository _repository;
 
-        public DeleteTodoTaskHandler(ITodoTaskRepository repository)
+        public DeleteTodoTaskHandler(IReadTodoTaskRepository repository)
         {
             _repository = repository;
         }
