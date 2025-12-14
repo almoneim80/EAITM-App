@@ -6,6 +6,8 @@ using EAITMApp.Infrastructure.Repositories.TaskRepo;
 using EAITMApp.Infrastructure.Repositories.UserRepo;
 using EAITMApp.Application.Persistence;
 using EAITMApp.Infrastructure.Settings;
+using EAITMApp.Infrastructure.Behaviors;
+using MediatR;
 
 namespace EAITMApp.Infrastructure.DependencyInjection
 {
@@ -42,9 +44,9 @@ namespace EAITMApp.Infrastructure.DependencyInjection
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
 
-            // =========================
+            // ===============================
             // Repository registration logic
-            // =========================
+            // ===============================
             services.AddScoped<IReadTodoTaskRepository>(sp =>
             {
                 var dbContext = sp.GetRequiredService<IWriteDbContext>();
@@ -56,6 +58,12 @@ namespace EAITMApp.Infrastructure.DependencyInjection
                 var dbContext = sp.GetRequiredService<IWriteDbContext>();
                 return new UserRepository(dbContext);
             });
+
+            // =====================================
+            // MediatR Pipeline Behaviors Registration
+            // =====================================
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
 
             return services;
         }

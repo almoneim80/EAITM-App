@@ -25,9 +25,5 @@ namespace EAITMApp.Application.Interfaces
         /// <param name="id">is the id of task that we want to delete</param>
         /// <returns>return nothing</returns>
         Task DeleteAsync(Guid id);
-
-        Task BeginTransactionAsync();
-        Task CommitAsync();
-        Task RollbackAsync();
     }
 }

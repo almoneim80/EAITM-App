@@ -7,16 +7,18 @@ namespace EAITMApp.Application.Handlers.TaskHDL
 {
     public class UpdateTodoTaskHandler : IRequestHandler<UpdateTodoTaskCommand, TodoTask?>
     {
-        private readonly IReadTodoTaskRepository _repository;
+        private readonly IWriteTodoTaskRepository _repository;
+        private readonly IReadTodoTaskRepository _readRepository;
 
-        public UpdateTodoTaskHandler(IReadTodoTaskRepository repository)
+        public UpdateTodoTaskHandler(IWriteTodoTaskRepository repository, IReadTodoTaskRepository readRepository)
         {
             _repository = repository;
+            _readRepository = readRepository;
         }
 
         public async Task<TodoTask?> Handle(UpdateTodoTaskCommand request, CancellationToken cancellationToken)
         {
-            var task = await _repository.GetByIdAsync(request.Id);
+            var task = await _readRepository.GetByIdAsync(request.Id);
             if (task == null)
                 return null;
 

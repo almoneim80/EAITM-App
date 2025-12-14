@@ -1,11 +1,8 @@
-using EAITMApp.Application.UseCases.Commands.TaskCMD;
-using MediatR;
-using FluentValidation;
-using EAITMApp.Application.Validators;
+using EAITMApp.Application.DependencyInjection;
+using EAITMApp.Infrastructure.DependencyInjection;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson;
-using EAITMApp.Infrastructure.DependencyInjection;
 
 
 // Serializer dedicated to standardizing the method of storing and reading Guid values in MongoDB.
@@ -15,32 +12,33 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var services = builder.Services;
 
+// ==========================================================
+// 1. SERVICES REGISTRATION (CENTRALIZED)
+// ==========================================================
+
+// Application DI
+services.AddApplicationServices();
+// Infrastructure DI
+services.AddInfrastructure(configuration);
+
+// ==========================================================
+// 2. API/Controller Configuration
+// ==========================================================
 
 // Add services.
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
-//MediatR
-services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(AddTodoTaskCommand).Assembly));
-
-// Register Repository
-services.AddControllers();
-
-// Register all Validators within the Application Assembly
-services.AddValidatorsFromAssemblyContaining<RegisterUserDtoValidator>();
-
 // Enable automatic verification in Controllers
 services.AddControllers().ConfigureApiBehaviorOptions(options =>
 {
-    options.SuppressModelStateInvalidFilter = false;
+    // ≈–« ·„ ‰ﬁ„ »≈Ìﬁ«› Â–«° ”Ì „ «· ⁄«„· „⁄ «·√Œÿ«¡ „— Ì‰.
+    options.SuppressModelStateInvalidFilter = true;
 });
-
-// Infrastructure DI
-services.AddInfrastructure(configuration);
-
 
 var app = builder.Build();
 app.MapControllers();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -49,5 +47,4 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.Run();

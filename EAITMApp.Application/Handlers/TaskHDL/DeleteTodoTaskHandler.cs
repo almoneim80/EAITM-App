@@ -6,20 +6,22 @@ namespace EAITMApp.Application.Handlers.TaskHDL
 {
     public class DeleteTodoTaskHandler : IRequestHandler<DeleteTodoTaskCommand, bool>
     {
-        private readonly IReadTodoTaskRepository _repository;
+        private readonly IWriteTodoTaskRepository _writeRepository;
+        private readonly IReadTodoTaskRepository _readRepository;
 
-        public DeleteTodoTaskHandler(IReadTodoTaskRepository repository)
+        public DeleteTodoTaskHandler(IWriteTodoTaskRepository writeRepository, IReadTodoTaskRepository readRepository)
         {
-            _repository = repository;
+            _writeRepository = writeRepository;
+            _readRepository = readRepository;
         }
 
         public async Task<bool> Handle(DeleteTodoTaskCommand request, CancellationToken cancellationToken)
         {
-            var task = await _repository.GetByIdAsync(request.Id);
+            var task = await _readRepository.GetByIdAsync(request.Id);
             if (task == null)
                 return false;
 
-            await _repository.DeleteAsync(request.Id);
+            await _writeRepository.DeleteAsync(request.Id);
             return true;
         }
     }

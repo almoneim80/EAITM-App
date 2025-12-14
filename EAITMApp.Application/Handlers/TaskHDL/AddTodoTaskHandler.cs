@@ -7,22 +7,18 @@ namespace EAITMApp.Application.Handlers.TaskHDL
 {
     public class AddTodoTaskHandler : IRequestHandler<AddTodoTaskCommand, TodoTask>
     {
-        private readonly IEnumerable<IWriteTodoTaskRepository> _repositories;
+        private readonly IWriteTodoTaskRepository _repository;
 
-        public AddTodoTaskHandler(IEnumerable<IWriteTodoTaskRepository> repositories)
+        public AddTodoTaskHandler(IWriteTodoTaskRepository repository)
         {
-            _repositories = repositories;
+            _repository = repository;
         }
 
         public async Task<TodoTask> Handle(AddTodoTaskCommand request, CancellationToken cancellationToken)
         {
             var task = new TodoTask(request.Title, request.Description);
 
-            // إضافة المهمة في كل مصدر تخزين موجود
-            foreach (var repo in _repositories)
-            {
-                await repo.AddAsync(task);
-            }
+            await _repository.AddAsync(task);
 
             return task;
         }
