@@ -8,7 +8,7 @@ namespace EAITMApp.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TasksController : ControllerBase
+    public class TasksController : ApiResponseController
     {
         private readonly IMediator _mediator;
 
@@ -21,32 +21,32 @@ namespace EAITMApp.Api.Controllers
         /// Add a new Todo Task
         /// </summary>
         [HttpPost]
-        public async Task<ActionResult<TodoTask>> AddTask([FromBody] AddTodoTaskCommand command)
+        public async Task<IActionResult> AddTask([FromBody] AddTodoTaskCommand command)
         {
             var result = await _mediator.Send(command);
-            return Ok(result);
+            return Success(result, "Task created successfully.");
         }
 
         /// <summary>
         /// Get all Todo Tasks
         /// </summary>
         [HttpGet]
-        public async Task<ActionResult<List<TodoTask>>> GetAllTasks()
+        public async Task<IActionResult> GetAllTasks()
         {
             var result = await _mediator.Send(new GetAllTasksQuery());
-            return Ok(result);
+            return Success(result, "Task retrieved successfully.");
         }
 
         /// <summary>
         /// Get task by Id
         /// </summary>
         [HttpGet("{id}")]
-        public async Task<ActionResult<TodoTask>> GetTaskById(Guid id)
+        public async Task<IActionResult> GetTaskById(Guid id)
         {
             var result = await _mediator.Send(new GetTaskByIdQuery(id));
             if (result == null)
                 return NotFound();
-            return Ok(result);
+            return Success(result, "Task retrieved successfully.");
         }
 
         /// <summary>

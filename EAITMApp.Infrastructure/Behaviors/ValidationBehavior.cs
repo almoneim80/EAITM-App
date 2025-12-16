@@ -1,4 +1,5 @@
-﻿using EAITMApp.Application.Exceptions;
+﻿using EAITMApp.Application.Common.Responses;
+using EAITMApp.Application.Exceptions;
 using FluentValidation;
 using MediatR;
 
@@ -28,7 +29,8 @@ namespace EAITMApp.Infrastructure.Behaviors
                 // إذا وُجدت أي أخطاء، قم برمي استثناء ValidationException
                 if (failures.Any())
                 {
-                    var mappedErrors = failures.Select(f => new ValidationError(f.PropertyName, f.ErrorMessage)).ToList();
+                    var mappedErrors = failures.Select(f => 
+                    new ApiError(Code: "VALIDATION_ERROR", Message: f.ErrorMessage, Property: f.PropertyName)).ToList();
                     throw new RequestValidationException(mappedErrors);
                 }
             }

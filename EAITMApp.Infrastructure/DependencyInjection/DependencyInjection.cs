@@ -49,8 +49,14 @@ namespace EAITMApp.Infrastructure.DependencyInjection
             // ===============================
             services.AddScoped<IReadTodoTaskRepository>(sp =>
             {
-                var dbContext = sp.GetRequiredService<IWriteDbContext>();
+                var dbContext = sp.GetRequiredService<IReadDbContext>();
                 return new TodoTaskReadRepository(dbContext);
+            });
+
+            services.AddScoped<IWriteTodoTaskRepository>(sp =>
+            {
+                var dbContext = sp.GetRequiredService<IWriteDbContext>();
+                return new TodoTaskWriteRepository(dbContext);
             });
 
             services.AddScoped<IUserRepository>(sp =>

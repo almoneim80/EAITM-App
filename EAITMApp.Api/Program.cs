@@ -3,6 +3,7 @@ using EAITMApp.Infrastructure.DependencyInjection;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson;
+using EAITMApp.Api.Middlewares;
 
 
 // Serializer dedicated to standardizing the method of storing and reading Guid values in MongoDB.
@@ -38,6 +39,9 @@ services.AddControllers().ConfigureApiBehaviorOptions(options =>
 
 var app = builder.Build();
 app.MapControllers();
+
+// regester middleware
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
