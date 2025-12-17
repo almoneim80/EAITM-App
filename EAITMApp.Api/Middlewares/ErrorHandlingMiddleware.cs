@@ -19,26 +19,41 @@ namespace EAITMApp.Api.Middlewares
             }
             catch (RequestValidationException ex)
             {
-                // التعامل مع أخطاء التحقق فقط
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 context.Response.ContentType = "application/json";
 
-                var response = ApiResponse<object>.Failure(
-                    "Validation failed",
-                    ex.Errors);
+                var errors = ex.Errors.Select(e => e with { TraceId = context.TraceIdentifier}).ToArray();
+                var response = ApiResponse<object>.Failure("Validation failed",errors);
 
                 await context.Response.WriteAsJsonAsync(response);
             }
-            catch(Exception ex)
+            catch (ConflictException ex)
             {
-                // كل الاستثناءات الأخرى
+                context.Response.StatusCode = StatusCodes.Status409Conflict;
+                context.Response.ContentType = "application/json";
+
+                var errors = ex.Errors.Select(e => e with { TraceId = context.TraceIdentifier }).ToArray();
+                var response = ApiResponse<object>.Failure("Conflict occurred while processing the request", errors);
+
+                await context.Response.WriteAsJsonAsync(response);
+            }
+            catch (NotFoundException ex)
+            {
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                context.Response.ContentType = "application/json";
+
+                var errors = ex.Errors.Select(e => e with { TraceId = context.TraceIdentifier }).ToArray();
+                var response = ApiResponse<object>.Failure("Resource not found", errors);
+
+                await context.Response.WriteAsJsonAsync(response);
+            }
+            catch (GeneralException ex)
+            {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 context.Response.ContentType = "application/json";
 
-                var response = ApiResponse<object>.Failure(
-                    "An unexpected error occurred. Please contact support.",
-                    Array.Empty<ApiError>()
-                    );
+                var errors = ex.Errors.Select(e => e with { TraceId = context.TraceIdentifier }).ToArray();
+                var response = ApiResponse<object>.Failure("An unexpected error occurred.", errors);
 
                 await context.Response.WriteAsJsonAsync(response);
             }

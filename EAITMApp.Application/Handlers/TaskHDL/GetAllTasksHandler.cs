@@ -10,7 +10,7 @@ namespace EAITMApp.Application.Handlers.TaskHDL
         private readonly IReadTodoTaskRepository _repository = repository;
         public async Task<List<TodoTask>> Handle(GetAllTasksQuery request, CancellationToken cancellationToken)
         {
-            return await _repository.GetAllAsync();
+            return await _repository.GetAll();
         }
     }
 }

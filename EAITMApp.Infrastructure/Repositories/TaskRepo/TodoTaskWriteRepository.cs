@@ -7,11 +7,10 @@ namespace EAITMApp.Infrastructure.Repositories.TaskRepo
     public class TodoTaskWriteRepository(IWriteDbContext context) : IWriteTodoTaskRepository
     {
         private readonly IWriteDbContext _context = context;
-
+            
         /// <inheritdoc/>
         public async Task<TodoTask> AddAsync(TodoTask task)
         {
-            Console.WriteLine("<------------- Add Task To Postgres -------------->");
             await _context.Set<TodoTask>().AddAsync(task);
             await _context.SaveChangesAsync();
             return task;

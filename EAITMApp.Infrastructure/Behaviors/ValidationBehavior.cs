@@ -1,4 +1,5 @@
-﻿using EAITMApp.Application.Common.Responses;
+﻿using EAITMApp.Application.Common.Enums;
+using EAITMApp.Application.Common.Responses;
 using EAITMApp.Application.Exceptions;
 using FluentValidation;
 using MediatR;
@@ -30,7 +31,11 @@ namespace EAITMApp.Infrastructure.Behaviors
                 if (failures.Any())
                 {
                     var mappedErrors = failures.Select(f => 
-                    new ApiError(Code: "VALIDATION_ERROR", Message: f.ErrorMessage, Property: f.PropertyName)).ToList();
+                    new ApiError(
+                        Code: "VALIDATION_ERROR", 
+                        Message: f.ErrorMessage, 
+                        Property: f.PropertyName,
+                        Severity: ErrorSeverity.Low)).ToList();
                     throw new RequestValidationException(mappedErrors);
                 }
             }

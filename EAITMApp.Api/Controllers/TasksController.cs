@@ -44,9 +44,7 @@ namespace EAITMApp.Api.Controllers
         public async Task<IActionResult> GetTaskById(Guid id)
         {
             var result = await _mediator.Send(new GetTaskByIdQuery(id));
-            if (result == null)
-                return NotFound();
-            return Success(result, "Task retrieved successfully.");
+            return Success(result!, "Task retrieved successfully.");
         }
 
         /// <summary>
