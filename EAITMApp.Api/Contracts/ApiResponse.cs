@@ -1,4 +1,4 @@
-﻿namespace EAITMApp.Application.Common.Responses
+﻿namespace EAITMApp.Application.DTOs.Responses
 {
     public sealed class ApiResponse<T>
     {

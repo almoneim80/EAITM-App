@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\EAITMApp.Application\EAITMApp.Application.csproj" />
     <ProjectReference Include="..\EAITMApp.Domain\EAITMApp.Domain.csproj" />
+    <ProjectReference Include="..\EAITMApp.SharedKernel\EAITMApp.SharedKernel.csproj" />
   </ItemGroup>
 
 </Project>

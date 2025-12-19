@@ -10,4 +10,8 @@
     <PackageReference Include="MongoDB.Bson" Version="3.4.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\EAITMApp.SharedKernel\EAITMApp.SharedKernel.csproj" />
+  </ItemGroup>
+
 </Project>

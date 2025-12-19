@@ -1,4 +1,4 @@
-﻿namespace EAITMApp.Application.Common.Enums
+﻿namespace EAITMApp.SharedKernel.Errors.Enums
 {
     public enum ErrorSeverity
     {

@@ -1,6 +1,6 @@
-﻿using EAITMApp.Application.Common.Enums;
+﻿using EAITMApp.SharedKernel.Errors.Enums;
 
-namespace EAITMApp.Application.Common.Responses
+namespace EAITMApp.Application.DTOs.Responses
 {
     public sealed record ApiError(
         string Code,

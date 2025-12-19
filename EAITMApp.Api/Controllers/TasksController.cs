@@ -21,10 +21,10 @@ namespace EAITMApp.Api.Controllers
         /// Add a new Todo Task
         /// </summary>
         [HttpPost]
-        public async Task<IActionResult> AddTask([FromBody] AddTodoTaskCommand command)
+        public async Task<IActionResult> AddTask([FromBody] AddTodoTaskCommand command, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(command);
-            return Success(result, "Task created successfully.");
+            var result = await _mediator.Send(command, cancellationToken);
+            return Created(result, "Task created successfully.", nameof(GetTaskById), new { id = result.Id });
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace EAITMApp.Api.Controllers
         /// <summary>
         /// Get task by Id
         /// </summary>
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetTaskById")]
         public async Task<IActionResult> GetTaskById(Guid id)
         {
             var result = await _mediator.Send(new GetTaskByIdQuery(id));

@@ -20,7 +20,7 @@ namespace EAITMApp.Application.Handlers.TaskHDL
         public async Task<TodoTask> Handle(AddTodoTaskCommand request, CancellationToken cancellationToken)
         {
             if (await _readRepository.ExistsByTitleAsync(request.Title, cancellationToken))
-                throw new ConflictException("");
+                throw new ConflictException("A task with the same title already exists.");
 
             var task = new TodoTask(request.Title, request.Description);
             await _repository.AddAsync(task);
