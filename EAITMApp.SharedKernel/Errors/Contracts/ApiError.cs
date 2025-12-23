@@ -1,6 +1,6 @@
 ﻿using EAITMApp.SharedKernel.Errors.Enums;
 
-namespace EAITMApp.Application.DTOs.Responses
+namespace EAITMApp.SharedKernel.Errors.Contracts
 {
     public sealed record ApiError(
         string Code,

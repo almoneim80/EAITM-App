@@ -1,4 +1,4 @@
-﻿namespace EAITMApp.Application.DTOs.Responses
+﻿namespace EAITMApp.SharedKernel.Errors.Contracts
 {
     public sealed class ApiResponse<T>
     {

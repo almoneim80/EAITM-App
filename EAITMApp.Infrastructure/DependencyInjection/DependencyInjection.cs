@@ -8,6 +8,8 @@ using EAITMApp.Application.Persistence;
 using EAITMApp.Infrastructure.Settings;
 using EAITMApp.Infrastructure.Behaviors;
 using MediatR;
+using EAITMApp.Infrastructure.Errors;
+using EAITMApp.SharedKernel.Errors;
 
 namespace EAITMApp.Infrastructure.DependencyInjection
 {
@@ -70,6 +72,12 @@ namespace EAITMApp.Infrastructure.DependencyInjection
             // =====================================
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
+
+            // =====================================
+            // Exception Mapping Engine Registration
+            // =====================================
+            services.AddScoped<ErrorMappingEngine>();
+            services.AddSingleton<IErrorMapper, BaseAppExceptionMapper>();
 
             return services;
         }

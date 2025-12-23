@@ -5,7 +5,7 @@ namespace EAITMApp.SharedKernel.Exceptions
     public abstract class BaseAppException : Exception
     {
         /// <summary>
-        /// Descriptor ثابت يحدد هوية الخطأ
+        /// Descriptor: ثابت يحدد هوية الخطأ
         /// </summary>
         public ErrorDescriptor Descriptor { get; }
 

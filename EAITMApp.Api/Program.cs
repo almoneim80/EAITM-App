@@ -43,6 +43,7 @@ app.MapControllers();
 // regester middleware
 app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseMiddleware<CorrelationMiddleware>();
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
