@@ -2,6 +2,10 @@
 
 namespace EAITMApp.SharedKernel.Errors.Registries
 {
+    /// <summary>
+    /// Provides a registry of validation-related error descriptors
+    /// used to represent input and rule validation failures.
+    /// </summary>
     public static class ValidationErrors
     {
         private const string Prefix = "VALIDATION ERROR: ";

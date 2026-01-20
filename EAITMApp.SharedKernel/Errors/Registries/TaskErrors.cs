@@ -2,6 +2,10 @@
 
 namespace EAITMApp.SharedKernel.Errors.Registries
 {
+    /// <summary>
+    /// Defines task-related business error descriptors used to represent
+    /// invalid or conflicting operations within the task domain.
+    /// </summary>
     public class TaskErrors
     {
         private const string Prefix = "TASK ERROR: ";

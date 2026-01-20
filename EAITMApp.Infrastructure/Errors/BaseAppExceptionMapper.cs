@@ -4,11 +4,21 @@ using EAITMApp.SharedKernel.Exceptions;
 
 namespace EAITMApp.Infrastructure.Errors
 {
+    /// <summary>
+    /// Maps <see cref="BaseAppException"/> instances to <see cref="ApiError"/> objects.
+    /// Ensures that only errors marked as safe to expose reveal their original message,
+    /// while others fallback to the descriptor's default message.
+    /// </summary>
     public class BaseAppExceptionMapper : IErrorMapper
     {
-        public int Priority => 0;
+        /// <inheritdoc/>
+        public int Priority => 0; // Law priority becuase its general mapper.
+
+        /// <inheritdoc/>
         public bool CanMap(Exception exception) => exception is BaseAppException;
-        public async Task<ErrorMappingResult> MapAsync(Exception exception, ErrorContext context)
+
+        /// <inheritdoc/>
+        public async Task<ApiError> MapAsync(Exception exception, ErrorContext context)
         {
             var ex = (BaseAppException)exception;
             var descriptor = ex.Descriptor;
@@ -20,8 +30,7 @@ namespace EAITMApp.Infrastructure.Errors
                 Severity: descriptor.Severity
             );
 
-            var result = new ErrorMappingResult(descriptor.HttpStatus, apiError);
-            return await Task.FromResult(result);
+            return await Task.FromResult(apiError);
         }
     }
 }

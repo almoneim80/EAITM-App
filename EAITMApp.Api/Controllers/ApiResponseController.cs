@@ -1,5 +1,4 @@
-﻿using EAITMApp.Application.DTOs.Responses;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace EAITMApp.Api.Controllers
 {

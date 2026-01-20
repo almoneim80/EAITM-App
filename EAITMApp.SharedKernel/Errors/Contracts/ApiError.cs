@@ -2,6 +2,10 @@
 
 namespace EAITMApp.SharedKernel.Errors.Contracts
 {
+    /// <summary>
+    /// Represents a single error in an API response, including a unique code, message,
+    /// optional property reference, trace identifier, and severity level.
+    /// </summary>
     public sealed record ApiError(
         string Code,
         string Message,

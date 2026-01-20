@@ -2,6 +2,10 @@
 
 namespace EAITMApp.SharedKernel.Errors.Registries
 {
+    /// <summary>
+    /// Provides a centralized registry of common, cross-cutting error descriptors
+    /// used across the system for infrastructure and system-level failures.
+    /// </summary>
     public static class CommonErrors
     {
         private const string Prefix = "SYSTEM ERROR: ";

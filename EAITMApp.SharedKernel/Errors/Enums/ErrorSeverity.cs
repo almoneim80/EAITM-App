@@ -1,5 +1,9 @@
 ﻿namespace EAITMApp.SharedKernel.Errors.Enums
 {
+    /// <summary>
+    /// Defines the severity level of an application error,
+    /// used for logging, monitoring, and client response purposes.
+    /// </summary>
     public enum ErrorSeverity
     {
         Low = 1,        // User mistake (NotFound, Validation)

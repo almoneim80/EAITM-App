@@ -2,16 +2,21 @@
 
 namespace EAITMApp.Api.Middlewares
 {
-    public class GlobalExceptionHandlerMiddleware
+    /// <summary>
+    /// Global middleware to handle unhandled exceptions in the request pipeline.
+    /// Converts exceptions into standardized API error responses using <see cref="ErrorMappingEngine"/>.
+    /// </summary>
+    public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<GlobalExceptionHandlerMiddleware> logger)
     {
-        private readonly RequestDelegate _next;
-        private readonly ILogger<GlobalExceptionHandlerMiddleware> _logger;
-        public GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<GlobalExceptionHandlerMiddleware> logger)
-        {
-            _next = next;
-            _logger = logger;
-        }
+        private readonly RequestDelegate _next = next;
+        private readonly ILogger<GlobalExceptionHandlerMiddleware> _logger = logger;
 
+
+        /// <summary>
+        /// Invokes the middleware for the current HTTP context.
+        /// Catches unhandled exceptions, maps them using <see cref="ErrorMappingEngine"/>,
+        /// and writes a consistent JSON response to the client.
+        /// </summary>
         public async Task InvokeAsync(HttpContext context, ErrorMappingEngine engine)
         {
             try
@@ -22,20 +27,20 @@ namespace EAITMApp.Api.Middlewares
             {
                 if (context.Response.HasStarted)
                 {
-                    // إذا بدأ الإرسال فعلاً، لا يمكننا تغيير الـ Status Code أو كتابة JSON جديد
-                    // الحل الوحيد هو تسجيل الخطأ في الـ Log وترك الاستثناء يرتفع للأعلى
-                    _logger.LogWarning("الرد بدأ بالفعل. لا يمكن للميدلوير تحويل الخطأ لـ ApiResponse.");
+                    // If the response has already started, we cannot modify the Status Code or write a new JSON.
+                    // The only option is to log the error and let the exception propagate.
+                    _logger.LogWarning("The response has already started. The middleware cannot convert the error into an ApiResponse.");
                     throw;
                 }
 
-                // 2. استخدام المحرك لتحويل الـ Exception إلى نتيجة معتمدة
+                // Use the engine to convert the Exception.
                 var result = await engine.MapExceptionAsync(ex);
 
-                // 4. إعداد الرد للمستخدم
+                // Prepare the response.
                 context.Response.StatusCode = result.StatusCode;
                 context.Response.ContentType = "application/json";
 
-                await context.Response.WriteAsJsonAsync(result.Respons);
+                await context.Response.WriteAsJsonAsync(result.Response);
             }
         }
     }
