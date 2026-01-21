@@ -1,10 +1,11 @@
 ﻿using EAITMApp.Infrastructure.Errors.Policies;
 using EAITMApp.SharedKernel.Errors;
 using EAITMApp.SharedKernel.Errors.Contracts;
+using EAITMApp.SharedKernel.Errors.Enums;
+using EAITMApp.SharedKernel.Errors.Hooks;
 using EAITMApp.SharedKernel.Errors.Policies;
 using EAITMApp.SharedKernel.Errors.Registries;
 using EAITMApp.SharedKernel.Exceptions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace EAITMApp.Infrastructure.Errors
@@ -20,6 +21,7 @@ namespace EAITMApp.Infrastructure.Errors
         private readonly IErrorContextProvider _contextProvider;
         private readonly ILogger<ErrorMappingEngine> _logger;
         private readonly IErrorExposurePolicy _policy;
+        private readonly IEnumerable<IErrorHook> _hooks;
 
         /// <summary>
         /// Initializes a new instance of <see cref="ErrorMappingEngine"/>.
@@ -29,13 +31,15 @@ namespace EAITMApp.Infrastructure.Errors
             IEnumerable<IErrorMapper> mappers, 
             IErrorContextProvider contextProvider, 
             ILogger<ErrorMappingEngine> logger,
-            ErrorExposurePolicyFactory policyFactory)
+            ErrorExposurePolicyFactory policyFactory,
+            IEnumerable<IErrorHook> hooks)
         {
             // Sort the mappers once during injection to improve performance.
             _mappers = mappers.OrderByDescending(m => m.Priority);
             _contextProvider = contextProvider;
             _logger = logger;
             _policy = policyFactory.CreateErrorExposurePolicy();
+            _hooks = hooks ?? Enumerable.Empty<IErrorHook>();
         }
 
         /// <summary>
@@ -46,6 +50,10 @@ namespace EAITMApp.Infrastructure.Errors
         public async Task<ErrorMappingResult> MapExceptionAsync(Exception exception)
         {
             var context = _contextProvider.Current;
+            var hookContext = new ErrorHookContext(exception, context);
+
+            foreach (var hook in _hooks) await hook.BeforeMapAsync(hookContext);
+
             _logger.LogError(exception, "Unhandled Exception: {Message}. [TraceId: {TraceId}] Context: {@ErrorContext}",
                 exception.Message, context.TraceId, context);
 
@@ -69,6 +77,13 @@ namespace EAITMApp.Infrastructure.Errors
 
             // تطبيق سياسة التطهير قبل التغليف النهائي
             var safeError = _policy.Apply(apiError, context, exception);
+            var finalHookContext = hookContext with { ApiError = safeError, HttpStatusCode = statusCode };
+
+            foreach (var hook in _hooks) await hook.AfterMapAsync(finalHookContext);
+            if (safeError.Severity == ErrorSeverity.Critical)
+            {
+                foreach (var hook in _hooks) await hook.OnCriticalAsync(finalHookContext);
+            }
 
             // Unified packaging of the response.
             return BuildResult(statusCode, safeError);
