@@ -1,5 +1,4 @@
 ﻿using EAITMApp.SharedKernel.Errors.Enums;
-
 namespace EAITMApp.SharedKernel.Errors.Contracts
 {
     /// <summary>
@@ -11,6 +10,7 @@ namespace EAITMApp.SharedKernel.Errors.Contracts
         string Message,
         string? Property = null,
         string? TraceId = null,
-        ErrorSeverity Severity = ErrorSeverity.Low
+        ErrorSeverity Severity = ErrorSeverity.Low,
+        Dictionary<string, object?>? Metadata = null
     );
 }

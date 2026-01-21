@@ -1,7 +1,10 @@
-﻿using EAITMApp.SharedKernel.Errors;
+﻿using EAITMApp.Infrastructure.Errors.Policies;
+using EAITMApp.SharedKernel.Errors;
 using EAITMApp.SharedKernel.Errors.Contracts;
+using EAITMApp.SharedKernel.Errors.Policies;
 using EAITMApp.SharedKernel.Errors.Registries;
 using EAITMApp.SharedKernel.Exceptions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace EAITMApp.Infrastructure.Errors
@@ -16,17 +19,23 @@ namespace EAITMApp.Infrastructure.Errors
         private readonly IEnumerable<IErrorMapper> _mappers;
         private readonly IErrorContextProvider _contextProvider;
         private readonly ILogger<ErrorMappingEngine> _logger;
+        private readonly IErrorExposurePolicy _policy;
 
         /// <summary>
         /// Initializes a new instance of <see cref="ErrorMappingEngine"/>.
         /// </summary>
         /// <param name="mappers">Collection of registered error mappers, ordered by priority.</param>
-        public ErrorMappingEngine(IEnumerable<IErrorMapper> mappers, IErrorContextProvider contextProvider, ILogger<ErrorMappingEngine> logger)
+        public ErrorMappingEngine(
+            IEnumerable<IErrorMapper> mappers, 
+            IErrorContextProvider contextProvider, 
+            ILogger<ErrorMappingEngine> logger,
+            ErrorExposurePolicyFactory policyFactory)
         {
             // Sort the mappers once during injection to improve performance.
             _mappers = mappers.OrderByDescending(m => m.Priority);
             _contextProvider = contextProvider;
             _logger = logger;
+            _policy = policyFactory.CreateErrorExposurePolicy();
         }
 
         /// <summary>
@@ -42,31 +51,41 @@ namespace EAITMApp.Infrastructure.Errors
 
             // FirstOrDefault will select the most specialized mapper (highest Priority) first
             var mapper = _mappers.FirstOrDefault(m => m.CanMap(exception));
+            ApiError apiError;
+            int statusCode;
 
             if (mapper != null)
             {
                 // Retrieve data from the mapper
-                var apiError = await mapper.MapAsync(exception, context);
-                int statusCode = exception is BaseAppException baseEx ? baseEx.Descriptor.HttpStatus : 500;
-
-                // Unified packaging of the response.
-                return BuildResult(statusCode, apiError);
+                apiError = await mapper.MapAsync(exception, context);
+                statusCode = exception is BaseAppException baseEx ? baseEx.Descriptor.HttpStatus : 500;
+            }
+            else
+            {
+                var descriptor = CommonErrors.UnexpectedError;
+                apiError = MapToFallback(exception, context);
+                statusCode = descriptor.HttpStatus;
             }
 
-            return MapToFallback(exception, context);
+            // تطبيق سياسة التطهير قبل التغليف النهائي
+            var safeError = _policy.Apply(apiError, context, exception);
+
+            // Unified packaging of the response.
+            return BuildResult(statusCode, safeError);
         }
 
+        #region private helper methods
         /// <summary>
         /// Maps exceptions for which no specific mapper exists to a generic system error.
         /// In Development, includes the original exception message for diagnostics.
         /// </summary>
-        private ErrorMappingResult MapToFallback(Exception exception, ErrorContext context)
+        private ApiError MapToFallback(Exception exception, ErrorContext context)
         {
             var descriptor = CommonErrors.UnexpectedError;
             string message = context.Environment == "Development" ? $"[DEV ONLY] {exception.Message}" : descriptor.DefaultMessage;
             var apiError = new ApiError(descriptor.Code, message, context.TraceId, descriptor.Severity.ToString());
 
-            return BuildResult(descriptor.HttpStatus, apiError);
+            return apiError;
         }
 
         /// <summary>
@@ -81,6 +100,6 @@ namespace EAITMApp.Infrastructure.Errors
                 ApiResponse<object>.Failure(error.Message, new[] { error })
             );
         }
-
+        #endregion 
     }
 }

@@ -4,6 +4,8 @@ using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson;
 using EAITMApp.Api.Middlewares;
+using EAITMApp.SharedKernel.Common;
+using EAITMApp.Infrastructure.Errors.Policies;
 
 
 // Serializer dedicated to standardizing the method of storing and reading Guid values in MongoDB.
@@ -12,7 +14,10 @@ BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var services = builder.Services;
-
+var appEnv = builder.Environment.IsDevelopment() ? AppEnvironment.Development :
+             builder.Environment.IsProduction() ? AppEnvironment.Production :
+                                                  AppEnvironment.Testing;
+builder.Services.AddSingleton(new ErrorExposurePolicyFactory(appEnv));
 // ==========================================================
 // 1. SERVICES REGISTRATION (CENTRALIZED)
 // ==========================================================
