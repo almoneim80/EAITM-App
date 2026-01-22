@@ -4,7 +4,7 @@ using EAITMApp.SharedKernel.Exceptions;
 namespace EAITMApp.Domain.Exceptions
 {
     /// <summary>
-    /// The base type for all domain-layer exceptions.
+    /// Serves as the base type for all domain-layer exceptions.
     /// Represents violations of business rules or invalid domain states.
     /// </summary>
     public abstract class DomainExceptionBase : BaseAppException

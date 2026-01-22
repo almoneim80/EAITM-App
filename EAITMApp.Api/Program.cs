@@ -6,6 +6,7 @@ using MongoDB.Bson;
 using EAITMApp.Api.Middlewares;
 using EAITMApp.SharedKernel.Common;
 using EAITMApp.Infrastructure.Errors.Policies;
+using System.Text.Json.Serialization;
 
 
 // Serializer dedicated to standardizing the method of storing and reading Guid values in MongoDB.
@@ -27,6 +28,9 @@ services.AddApplicationServices();
 // Infrastructure DI
 services.AddInfrastructure(configuration);
 
+// Error DI
+services.AddGlobalErrorHandling(appEnv);
+
 // ==========================================================
 // 2. API/Controller Configuration
 // ==========================================================
@@ -36,17 +40,21 @@ services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
 // Enable automatic verification in Controllers
-services.AddControllers().ConfigureApiBehaviorOptions(options =>
+services.AddControllers()
+.AddJsonOptions(options =>
+{
+    // Â–« «·”ÿ— ”ÌÕÊ· «·‹ Enum („À· Severity) ≈·Ï ‰’Ê’ "Critical" »œ·« „‰ √—ﬁ«„
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+})
+.ConfigureApiBehaviorOptions(options =>
 {
     // ≈–« ·„ ‰ﬁ„ »≈Ìﬁ«› Â–«° ”Ì „ «· ⁄«„· „⁄ «·√Œÿ«¡ „— Ì‰.
     options.SuppressModelStateInvalidFilter = true;
 });
 
 var app = builder.Build();
-app.MapControllers();
 
-// regester middleware
-app.UseMiddleware<ErrorHandlingMiddleware>();
+// Error middleware
 app.UseMiddleware<CorrelationMiddleware>();
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
@@ -58,4 +66,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.MapControllers();
 app.Run();

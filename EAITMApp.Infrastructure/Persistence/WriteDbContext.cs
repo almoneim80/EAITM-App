@@ -1,6 +1,5 @@
 ﻿using EAITMApp.Application.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace EAITMApp.Infrastructure.Persistence
 {

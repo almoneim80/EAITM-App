@@ -1,6 +1,7 @@
 ﻿using EAITMApp.Application.UseCases.Commands.TaskCMD;
 using EAITMApp.Application.UseCases.Queries;
-using EAITMApp.Domain.Entities;
+using EAITMApp.SharedKernel.Errors.Registries;
+using EAITMApp.SharedKernel.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -51,29 +52,23 @@ namespace EAITMApp.Api.Controllers
         /// Update a task
         /// </summary>
         [HttpPut("{id}")]
-        public async Task<ActionResult<TodoTask>> UpdateTask(Guid id, [FromBody] UpdateTodoTaskCommand command)
+        public async Task<IActionResult> UpdateTask(Guid id, [FromBody] UpdateTodoTaskCommand command)
         {
             if (id != command.Id)
-                return BadRequest("ID in URL does not match ID in body.");
+                throw new InvalidRequestException(CommonErrors.IdMismatch);
 
             var result = await _mediator.Send(command);
-            if (result == null)
-                return NotFound();
-
-            return Ok(result);
+            return Success(result, "Task updated successfully.");
         }
 
         /// <summary>
         /// Delete a task
         /// </summary>
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteTask(Guid id)
+        public async Task<IActionResult> DeleteTask(Guid id)
         {
             var success = await _mediator.Send(new DeleteTodoTaskCommand(id));
-            if (!success)
-                return NotFound();
-
-            return NoContent();
+            return Success("Task deleted successfully.");
         }
 
     }

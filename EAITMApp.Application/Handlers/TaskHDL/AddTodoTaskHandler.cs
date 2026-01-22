@@ -2,6 +2,8 @@
 using EAITMApp.Application.Interfaces;
 using EAITMApp.Application.UseCases.Commands.TaskCMD;
 using EAITMApp.Domain.Entities;
+using EAITMApp.SharedKernel.Errors.Registries;
+using EAITMApp.SharedKernel.Exceptions;
 using MediatR;
 
 namespace EAITMApp.Application.Handlers.TaskHDL
@@ -19,8 +21,8 @@ namespace EAITMApp.Application.Handlers.TaskHDL
 
         public async Task<TodoTask> Handle(AddTodoTaskCommand request, CancellationToken cancellationToken)
         {
-            if (await _readRepository.ExistsByTitleAsync(request.Title, cancellationToken))
-                throw new ConflictException("A task with the same title already exists.");
+            if (_readRepository.ExistsByTitleAsync(request.Title, cancellationToken))
+                throw new ConflictException(TaskErrors.DuplicateTitle);
 
             var task = new TodoTask(request.Title, request.Description);
             await _repository.AddAsync(task);

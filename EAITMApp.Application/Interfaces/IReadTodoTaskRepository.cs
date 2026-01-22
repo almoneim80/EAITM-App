@@ -16,12 +16,12 @@ namespace EAITMApp.Application.Interfaces
         /// </summary>
         /// <param name="id">task id (Guid)</param>
         /// <returns>return a specific task (TodoTask)</returns>
-        Task<bool> ExistsByTitleAsync(string title, CancellationToken cancellationToken);
+        bool ExistsByTitleAsync(string title, CancellationToken cancellationToken);
 
         /// <summary>
         /// get all tasks in DB, memory. as list (TodoTask)
         /// </summary>
         /// <returns>return data boject (TodoTask)</returns>
-        IQueryable<TodoTask> GetAll();
+        Task<IQueryable<TodoTask>> GetAll();
     }
 }

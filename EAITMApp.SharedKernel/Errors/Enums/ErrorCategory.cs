@@ -11,6 +11,7 @@
         Business = 2,          // Business rules errors
         Security = 3,          // Permissions and access errors
         Infrastructure = 4,    // External failure (database, other server)
-        System = 5             // Unexpected errors
+        System = 5,             // Unexpected errors
+        Request = 6,
     }
 }

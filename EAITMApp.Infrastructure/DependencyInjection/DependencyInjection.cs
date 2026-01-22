@@ -10,6 +10,7 @@ using EAITMApp.Infrastructure.Behaviors;
 using MediatR;
 using EAITMApp.Infrastructure.Errors;
 using EAITMApp.SharedKernel.Errors;
+using EAITMApp.Application.Behaviors;
 
 namespace EAITMApp.Infrastructure.DependencyInjection
 {

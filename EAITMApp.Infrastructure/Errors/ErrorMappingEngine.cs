@@ -49,6 +49,7 @@ namespace EAITMApp.Infrastructure.Errors
         /// </summary>
         public async Task<ErrorMappingResult> MapExceptionAsync(Exception exception)
         {
+            // get error context.
             var context = _contextProvider.Current;
             var hookContext = new ErrorHookContext(exception, context);
 
@@ -98,9 +99,12 @@ namespace EAITMApp.Infrastructure.Errors
         {
             var descriptor = CommonErrors.UnexpectedError;
             string message = context.Environment == "Development" ? $"[DEV ONLY] {exception.Message}" : descriptor.DefaultMessage;
-            var apiError = new ApiError(descriptor.Code, message, context.TraceId, descriptor.Severity.ToString());
-
-            return apiError;
+            return new ApiError(
+                    Code: descriptor.Code,
+                    Message: message,
+                    Property: null,
+                    TraceId: context.TraceId,
+                    Severity: descriptor.Severity);
         }
 
         /// <summary>
@@ -112,8 +116,7 @@ namespace EAITMApp.Infrastructure.Errors
             // This is the single place in the entire system that determines how the error response is presented.
             return new ErrorMappingResult(
                 statusCode,
-                ApiResponse<object>.Failure(error.Message, new[] { error })
-            );
+                ApiResponse<object>.Failure(error.Message, new[] { error }));
         }
         #endregion 
     }

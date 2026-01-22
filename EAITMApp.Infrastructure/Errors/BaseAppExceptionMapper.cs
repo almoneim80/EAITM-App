@@ -24,10 +24,12 @@ namespace EAITMApp.Infrastructure.Errors
             var descriptor = ex.Descriptor;
 
             var apiError = new ApiError(
-                Code: descriptor.Code,
-                Message: descriptor.IsSafeToExpose ? ex.Message : descriptor.DefaultMessage,
-                TraceId: context.TraceId,
-                Severity: descriptor.Severity
+                descriptor.Code,
+                descriptor.IsSafeToExpose ? ex.Message : descriptor.DefaultMessage,
+                null, // Null For General Error.
+                context.TraceId,
+                descriptor.Severity,
+                ex.Metadata.ToDictionary(k => k.Key, v => (object?)v.Value)
             );
 
             return await Task.FromResult(apiError);

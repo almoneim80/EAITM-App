@@ -2,6 +2,8 @@
 using EAITMApp.Application.Interfaces;
 using EAITMApp.Application.UseCases.Queries;
 using EAITMApp.Domain.Entities;
+using EAITMApp.SharedKernel.Errors.Registries;
+using EAITMApp.SharedKernel.Exceptions;
 using MediatR;
 
 namespace EAITMApp.Application.Handlers.TaskHDL
@@ -18,7 +20,7 @@ namespace EAITMApp.Application.Handlers.TaskHDL
         public async Task<TodoTask?> Handle(GetTaskByIdQuery request, CancellationToken cancellationToken)
         {
             var task = await _repository.GetByIdAsync(request.Id);
-            if (task == null) throw new NotFoundException("Task", request.Id);
+            if (task == null) throw new NotFoundException(TaskErrors.NotFound(request.Id));
             return task;
         }
     }

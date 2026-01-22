@@ -1,5 +1,7 @@
 ﻿using EAITMApp.Application.Interfaces;
 using EAITMApp.Application.UseCases.Commands.TaskCMD;
+using EAITMApp.SharedKernel.Errors.Registries;
+using EAITMApp.SharedKernel.Exceptions;
 using MediatR;
 
 namespace EAITMApp.Application.Handlers.TaskHDL
@@ -18,8 +20,7 @@ namespace EAITMApp.Application.Handlers.TaskHDL
         public async Task<bool> Handle(DeleteTodoTaskCommand request, CancellationToken cancellationToken)
         {
             var task = await _readRepository.GetByIdAsync(request.Id);
-            if (task == null)
-                return false;
+            if (task == null) throw new NotFoundException(TaskErrors.NotFound(request.Id));
 
             await _writeRepository.DeleteAsync(request.Id);
             return true;
