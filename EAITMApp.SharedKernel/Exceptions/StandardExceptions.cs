@@ -19,4 +19,7 @@ namespace EAITMApp.SharedKernel.Exceptions
 
     public sealed class InvalidRequestException(ErrorDescriptor descriptor,  IDictionary<string, object>? metadata = null)
         : BaseAppException(descriptor, metadata);
+
+    public sealed class PersistenceConfigurationException(ErrorDescriptor descriptor, IDictionary<string, object>? metadata = null)
+    : BaseAppException(descriptor, metadata);
 }

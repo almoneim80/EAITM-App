@@ -11,6 +11,8 @@ using MediatR;
 using EAITMApp.Infrastructure.Errors;
 using EAITMApp.SharedKernel.Errors;
 using EAITMApp.Application.Behaviors;
+using EAITMApp.Application.Persistence.Validation;
+using EAITMApp.Infrastructure.Persistence.Validation;
 
 namespace EAITMApp.Infrastructure.DependencyInjection
 {
@@ -79,7 +81,7 @@ namespace EAITMApp.Infrastructure.DependencyInjection
             // =====================================
             services.AddScoped<ErrorMappingEngine>();
             services.AddSingleton<IErrorMapper, BaseAppExceptionMapper>();
-
+            
             return services;
         }
     }

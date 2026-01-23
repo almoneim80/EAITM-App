@@ -39,7 +39,7 @@
         /// <summary>
         /// The SSL mode for the connection.
         /// </summary>
-        Npgsql.SslMode SslMode { get; set; }
+        string SslMode { get; set; }
 
         /// <summary>
         /// The pooling behavior for the connection.

@@ -3,7 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using EAITMApp.Application.Persistence;
 using EAITMApp.Infrastructure.Persistence;
 using EAITMApp.Infrastructure.Settings;
-using Npgsql;
+using EAITMApp.Infrastructure.Persistence.Providers;
+using EAITMApp.Application.Persistence.Validation;
+using EAITMApp.Infrastructure.Persistence.Validation;
+using EAITMApp.Application.Persistence.Transactions;
+using EAITMApp.Infrastructure.Persistence.Transactions;
+using EAITMApp.Application.Persistence.Repositories;
+using EAITMApp.Infrastructure.Persistence.Repositories;
 
 namespace EAITMApp.Infrastructure.DependencyInjection
 {
@@ -15,66 +21,52 @@ namespace EAITMApp.Infrastructure.DependencyInjection
         /// </summary>
         public static void ConfigureDatabases(IServiceCollection services, DataStoresSettings settings)
         {
-            if (settings == null) throw new ArgumentNullException(nameof(settings));
-
-            if (!string.Equals(
-                    settings.WriteDatabaseSettings.ProviderType,
-                    settings.ReadDatabaseSettings.ProviderType,
-                    StringComparison.OrdinalIgnoreCase))
-                throw new InvalidOperationException("Database types must match.");
-            
+            // register Providers
+            services.AddSingleton<IRelationalDatabaseProvider, PostgresDatabaseProvider>();
+            services.AddSingleton<IDatabaseProviderFactory, DatabaseProviderFactory>();
 
             // WriteDbContext
-            services.AddDbContext<WriteDbContext>(options => options.UseNpgsql(BuildConnectionString(settings.WriteDatabaseSettings)));
-            services.AddScoped<IWriteDbContext, WriteDbContext>();
+            ConfigureDbContextForProvider<WriteDbContext>(services, settings, s => s.WriteDatabaseSettings);
 
             // ReadDbContext
-            services.AddDbContext<ReadDbContext>(options =>
+            ConfigureDbContextForProvider<ReadDbContext>(services, settings, s => s.ReadDatabaseSettings, noTracking: true);
+
+            // Settings
+            services.AddSingleton<IDatabaseSettingsValidator, DatabaseSettingsValidator>();
+
+            // Unit of Work
+            services.AddScoped<IUnitOfWork, EfCoreUnitOfWork>(sp =>
             {
-                options.UseNpgsql(BuildConnectionString(settings.ReadDatabaseSettings));
-                options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+                var context = sp.GetRequiredService<WriteDbContext>();
+                var hooks = sp.GetServices<ITransactionHook>();
+                return new EfCoreUnitOfWork(context, hooks);
             });
-            services.AddScoped<IReadDbContext, ReadDbContext>();
+
+            // Repositories
+            services.AddScoped(typeof(IReadRepository<>), typeof(EfReadRepository<>));
+            services.AddScoped(typeof(IWriteRepository<,>), typeof(EfWriteRepository<,>));
         }
 
-        /// <summary>
-        /// Builds a connection string from the provided settings.
-        /// </summary>
-        private static string BuildConnectionString(IDatabaseConnectionSettings s)
+        private static void ConfigureDbContextForProvider<TContext>(
+            IServiceCollection services, 
+            DataStoresSettings settings, 
+            Func<DataStoresSettings, IDatabaseConnectionSettings> selectSettings,
+            bool noTracking = false) where TContext : DbContext
         {
-            if(string.IsNullOrWhiteSpace(s.Host) ||
-               s.Port <= 0 ||
-               string.IsNullOrWhiteSpace(s.Database) ||
-               string.IsNullOrWhiteSpace(s.Username) ||
-               string.IsNullOrWhiteSpace(s.Password)) 
+            services.AddDbContext<TContext>((serviceProvider, options) =>
             {
-                throw new 
-                    InvalidOperationException("One or more required database settings are missing " +
-                    "or invalid (Host, Port, Database, Username, Password).");
-            }
+                var providerFactory = serviceProvider.GetRequiredService<IDatabaseProviderFactory>();
+                var dbSettings = selectSettings(settings);
+                var provider = providerFactory.GetProvider(dbSettings.ProviderType);
 
-            var builder = new NpgsqlConnectionStringBuilder
-            {
-                Host = s.Host,
-                Port = s.Port,
-                Database = s.Database,
-                Username = s.Username,
-                Password = s.Password,
-                SslMode = s.SslMode,
-                Pooling = s.Pooling
-            };
+                if (provider is not IEFCoreRelationalProvider efProvider)
+                    throw new InvalidOperationException($"Provider '{provider.ProviderType}' does not support EF Core.");
 
-            foreach (var kvp in s.AdditionalSettings)
-            {
-                //if (builder.ContainsKey(kvp.Key))
-                //{
-                //    continue;
-                //}
+                var connectionString = provider.BuildConnectionString(dbSettings);
+                efProvider.ConfigureDbContext(options, connectionString);
 
-                builder[kvp.Key] = kvp.Value;
-            }
-
-            return builder.ConnectionString;
+                if (noTracking) options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+            });
         }
     }
 }

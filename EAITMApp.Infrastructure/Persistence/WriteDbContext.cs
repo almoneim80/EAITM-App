@@ -1,5 +1,4 @@
-﻿using EAITMApp.Application.Persistence;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace EAITMApp.Infrastructure.Persistence
 {
@@ -7,10 +6,9 @@ namespace EAITMApp.Infrastructure.Persistence
     /// EF Core DbContext optimized for write operations.
     /// Supports CQRS and replication scenarios.
     /// </summary>
-    public class WriteDbContext : DbContext, IWriteDbContext
+    public class WriteDbContext : DbContext
     {
-        public WriteDbContext(DbContextOptions<WriteDbContext> options)
-            : base(options) { }
+        public WriteDbContext(DbContextOptions<WriteDbContext> options) : base(options) { }
 
         /// <inheritdoc/>
         public DbSet<TEntity> Set<TEntity>() where TEntity : class => base.Set<TEntity>();

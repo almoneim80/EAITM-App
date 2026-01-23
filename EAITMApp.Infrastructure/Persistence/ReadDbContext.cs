@@ -1,5 +1,4 @@
-﻿using EAITMApp.Application.Persistence;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace EAITMApp.Infrastructure.Persistence
 {
@@ -7,13 +6,13 @@ namespace EAITMApp.Infrastructure.Persistence
     /// EF Core DbContext optimized for read-only operations.
     /// Supports CQRS/Replication scenarios.
     /// </summary>
-    public class ReadDbContext : DbContext, IReadDbContext
+    public class ReadDbContext : DbContext
     {
         public ReadDbContext(DbContextOptions<ReadDbContext> options) : base(options) { }
 
         /// <inheritdoc/>
         public DbSet<TEntity> Set<TEntity>() where TEntity : class => base.Set<TEntity>();
-
+        
         /// <inheritdoc/>
         public Task<TEntity?> FindAsync<TEntity>(object[] keyValues, CancellationToken cancellationToken = default)
             where TEntity : class
