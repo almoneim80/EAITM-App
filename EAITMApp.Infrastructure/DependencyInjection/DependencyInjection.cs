@@ -4,15 +4,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using EAITMApp.Infrastructure.Repositories.TaskRepo;
 using EAITMApp.Infrastructure.Repositories.UserRepo;
-using EAITMApp.Application.Persistence;
 using EAITMApp.Infrastructure.Settings;
 using EAITMApp.Infrastructure.Behaviors;
 using MediatR;
 using EAITMApp.Infrastructure.Errors;
 using EAITMApp.SharedKernel.Errors;
 using EAITMApp.Application.Behaviors;
-using EAITMApp.Application.Persistence.Validation;
-using EAITMApp.Infrastructure.Persistence.Validation;
 
 namespace EAITMApp.Infrastructure.DependencyInjection
 {
@@ -48,27 +45,6 @@ namespace EAITMApp.Infrastructure.DependencyInjection
                     "EAITMApp.Infrastructure.Factories"))
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
-
-            // ===============================
-            // Repository registration logic
-            // ===============================
-            services.AddScoped<IReadTodoTaskRepository>(sp =>
-            {
-                var dbContext = sp.GetRequiredService<IReadDbContext>();
-                return new TodoTaskReadRepository(dbContext);
-            });
-
-            services.AddScoped<IWriteTodoTaskRepository>(sp =>
-            {
-                var dbContext = sp.GetRequiredService<IWriteDbContext>();
-                return new TodoTaskWriteRepository(dbContext);
-            });
-
-            services.AddScoped<IUserRepository>(sp =>
-            {
-                var dbContext = sp.GetRequiredService<IWriteDbContext>();
-                return new UserRepository(dbContext);
-            });
 
             // =====================================
             // MediatR Pipeline Behaviors Registration

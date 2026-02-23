@@ -1,31 +1,24 @@
 ﻿using EAITMApp.Application.Interfaces;
-using EAITMApp.Infrastructure.Persistence;
+using EAITMApp.Application.Persistence;
 using MediatR;
 
 namespace EAITMApp.Infrastructure.Behaviors
 {
-    public class TransactionBehavior<TRequest, TResponse> 
+    /// <summary>
+    /// MediatR Pipeline Behavior that encapsulates the request within a Unit of Work transaction.
+    /// Only triggers for requests implementing ITransactionalCommand.
+    /// </summary>
+    public class TransactionBehavior<TRequest, TResponse>(IUnitOfWork unitOfWork)
         : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull, ITransactionalCommand
     {
-        // access to write database from related DbContext
-        private readonly WriteDbContext _context;
-        public TransactionBehavior(WriteDbContext context){ _context = context; }
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
-            // start Transaction
-            await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
-            try
+            return await _unitOfWork.ExecuteAsync(async ct =>
             {
-                var response = await next();
-                await transaction.CommitAsync(cancellationToken);
-                return response;
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync(cancellationToken);
-                throw;
-            }
+                return await next();
+            }, cancellationToken);
         }
     }
 }
