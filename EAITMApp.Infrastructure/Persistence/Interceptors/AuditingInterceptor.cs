@@ -13,18 +13,19 @@ namespace EAITMApp.Infrastructure.Persistence.Interceptors
     {
         private readonly ICurrentUserService _currentUser = currentUser;
 
-        public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
+        public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
             DbContextEventData eventData, 
             InterceptionResult<int> result, 
             CancellationToken cancellationToken = default)
         {
             var context = eventData.Context;
-            if(context == null) return base.SavingChangesAsync(eventData, result, cancellationToken);
+            if(context == null) return await base.SavingChangesAsync(eventData, result, cancellationToken);
 
             var now = DateTimeOffset.UtcNow;
-            var userId = _currentUser.UserId;
+            var userId = _currentUser.UserId ?? "System";
+            var auditLogs = new List<AuditLog>();
 
-            foreach(var entry in context.ChangeTracker.Entries())
+            foreach (var entry in context.ChangeTracker.Entries())
             {
                 if(entry.Entity is IAuditableEntity auditableEntity)
                 {
@@ -33,12 +34,25 @@ namespace EAITMApp.Infrastructure.Persistence.Interceptors
 
                 if (entry.Entity is ISoftDelete softDelete)
                 {
-                    HandleSoftDelete(entry, softDelete, now, userId);
+                    HandleSoftDelete(entry, softDelete, userId);
                 }
-                CreateAuditLogIfNeeded(context, entry, now, userId);
+
+                if (entry.Entity is not AuditLog && 
+                    entry.State is EntityState.Added or 
+                    EntityState.Modified or 
+                    EntityState.Deleted)
+                {
+                    var audit = CreateAuditEntry(entry, userId);
+                    if (audit != null) auditLogs.Add(audit);
+                }
             }
 
-            return SavingChangesAsync(eventData, result, cancellationToken);
+            if (auditLogs.Any())
+            {
+                await context.Set<AuditLog>().AddRangeAsync(auditLogs, cancellationToken);
+            }
+
+            return await base.SavingChangesAsync(eventData, result, cancellationToken);
         }
 
         private void HandleAudit(
@@ -57,29 +71,21 @@ namespace EAITMApp.Infrastructure.Persistence.Interceptors
         private void HandleSoftDelete(
             EntityEntry entry, 
             ISoftDelete softDelete,
-            DateTimeOffset now, 
             string? userId)
         {
             if (entry.State == EntityState.Deleted)
             {
                 entry.State = EntityState.Modified;
 
-                if (entry.Entity is BaseSoftDeletableEntity<Guid> baseEntity)
-                    baseEntity.SoftDelete(userId);
+                softDelete.SoftDelete(userId);
             }
         }
 
-        private void CreateAuditLogIfNeeded(
-            DbContext context, EntityEntry entry, DateTimeOffset now, string? userId)
+        private AuditLog? CreateAuditEntry(EntityEntry entry, string userId)
         {
-            if(entry.State == EntityState.Detached || 
-                entry.State == EntityState.Unchanged) return;
-
             var entityName = entry.Entity.GetType().Name;
-            var entityId = entry.Properties.FirstOrDefault(p => p.Metadata.IsPrimaryKey())?.CurrentValue;
-
-            var oldValues = entry.State == EntityState.Modified ? JsonSerializer.Serialize(entry.OriginalValues.ToObject()) : null;
-            var newValues = entry.State != EntityState.Deleted ? JsonSerializer.Serialize(entry.CurrentValues.ToObject()) : null;
+            var idProperty = entry.Properties.FirstOrDefault(p => p.Metadata.IsPrimaryKey());
+            var entityId = idProperty?.CurrentValue?.ToString() ?? "Temporary/New";
 
 
             var action = entry.State switch
@@ -90,18 +96,16 @@ namespace EAITMApp.Infrastructure.Persistence.Interceptors
                 _ => ObjectState.Unchanged
             };
 
-            var audit = new AuditLog(
+            return new AuditLog(
                 entityName,
                 entityId.ToString(),
                 action,
-                userId ?? "System",
-                oldValues,
-                newValues,
+                userId,
+                entry.State == EntityState.Modified ? JsonSerializer.Serialize(entry.OriginalValues.ToObject()) : null,
+                entry.State != EntityState.Deleted ? JsonSerializer.Serialize(entry.CurrentValues.ToObject()) : null,
                 _currentUser.IpAddress,
                 _currentUser.UserAgent
             );
-
-            context.Set<AuditLog>().Add(audit);
         }
     }
 }

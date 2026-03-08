@@ -28,5 +28,7 @@
         /// After this date, the entity could be permanently purged if desired.
         /// </summary>
         DateTimeOffset? SoftDeleteExpiration { get; }
+
+        void SoftDelete(string? deletedBy);
     }
 }
