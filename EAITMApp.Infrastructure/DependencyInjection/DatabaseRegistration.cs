@@ -10,6 +10,7 @@ using EAITMApp.Application.Persistence.Transactions;
 using EAITMApp.Infrastructure.Persistence.Transactions;
 using EAITMApp.Application.Persistence.Repositories;
 using EAITMApp.Infrastructure.Persistence.Repositories;
+using EAITMApp.Infrastructure.Persistence.Interceptors;
 
 namespace EAITMApp.Infrastructure.DependencyInjection
 {
@@ -45,6 +46,9 @@ namespace EAITMApp.Infrastructure.DependencyInjection
             // Repositories
             services.AddScoped(typeof(IReadRepository<>), typeof(EfReadRepository<>));
             services.AddScoped(typeof(IWriteRepository<,>), typeof(EfWriteRepository<,>));
+
+            // Interceptors
+            services.AddScoped<AuditingInterceptor>();
         }
 
         private static void ConfigureDbContextForProvider<TContext>(
@@ -66,6 +70,12 @@ namespace EAITMApp.Infrastructure.DependencyInjection
                 efProvider.ConfigureDbContext(options, connectionString);
 
                 if (noTracking) options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+
+                if (!noTracking)
+                {
+                    var interceptor = serviceProvider.GetRequiredService<AuditingInterceptor>();
+                    options.AddInterceptors(interceptor);
+                }
             });
         }
     }

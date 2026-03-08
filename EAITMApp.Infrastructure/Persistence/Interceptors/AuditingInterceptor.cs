@@ -37,7 +37,7 @@ namespace EAITMApp.Infrastructure.Persistence.Interceptors
                     HandleSoftDelete(entry, softDelete, userId);
                 }
 
-                if (entry.Entity is not AuditLog && 
+                if (entry.Entity.GetType() != typeof(AuditLog) && 
                     entry.State is EntityState.Added or 
                     EntityState.Modified or 
                     EntityState.Deleted)
