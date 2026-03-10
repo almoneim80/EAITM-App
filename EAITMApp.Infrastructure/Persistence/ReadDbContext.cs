@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EAITMApp.Domain.Common;
+using EAITMApp.Infrastructure.Persistence.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace EAITMApp.Infrastructure.Persistence
 {
@@ -26,6 +28,8 @@ namespace EAITMApp.Infrastructure.Persistence
 
             // Apply entity configurations
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ReadDbContext).Assembly);
+
+            modelBuilder.ApplyGlobalFilters();
         }
     }
 }
