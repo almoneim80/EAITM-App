@@ -1,5 +1,6 @@
 ﻿using EAITMApp.Domain.Common;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace EAITMApp.Infrastructure.Persistence.Extensions
@@ -17,20 +18,15 @@ namespace EAITMApp.Infrastructure.Persistence.Extensions
             /// </summary>
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
-                if (typeof(ISoftDelete).IsAssignableFrom(entityType.ClrType))
-                {
-                    var method = typeof(ModelBuilderExtensions)
-                        .GetMethod(nameof(SetSoftDeleteFilter),BindingFlags.NonPublic | BindingFlags.Static)
-                        ?.MakeGenericMethod(entityType.ClrType);
+                if (!typeof(ISoftDelete).IsAssignableFrom(entityType.ClrType)) continue;
 
-                    method?.Invoke(null, new object[] { modelBuilder });
-                }
+                var parameter = Expression.Parameter(entityType.ClrType, "e");
+                var property = Expression.Property(parameter, nameof(ISoftDelete.IsDeleted));
+                var condition = Expression.Equal(property, Expression.Constant(false));
+                var lambda = Expression.Lambda(condition, parameter);
+
+                modelBuilder.Entity(entityType.ClrType).HasQueryFilter(lambda);
             }
-        }
-
-        private static void SetSoftDeleteFilter<TEntity>(ModelBuilder modelBuilder) where TEntity : class, ISoftDelete
-        {
-            modelBuilder.Entity<TEntity>().HasQueryFilter(x => !x.IsDeleted);
         }
     }
 }
