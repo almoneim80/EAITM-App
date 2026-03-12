@@ -64,15 +64,26 @@ namespace EAITMApp.Infrastructure.DependencyInjection
                 var provider = providerFactory.GetProvider(dbSettings.ProviderType);
 
                 if (provider is not IEFCoreRelationalProvider efProvider)
+                {
+                    // Validates that the provider supports EF Core Relational operations to prevent execution on incompatible types.
                     throw new InvalidOperationException($"Provider '{provider.ProviderType}' does not support EF Core.");
-
+                }
+                
+                // Construct the connection string and configure DbContext fluently using the specific provider
                 var connectionString = provider.BuildConnectionString(dbSettings);
                 efProvider.ConfigureDbContext(options, connectionString);
 
-                if (noTracking) options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+                // Enable Snake Case naming convention
+                options.UseSnakeCaseNamingConvention();
 
-                if (!noTracking)
+                if (noTracking)
                 {
+                    // Disable change tracking to improve performance for read-only scenarios.
+                    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+                }
+                else
+                {
+                    // Register AuditingInterceptor to capture entity changes when tracking is enabled
                     var interceptor = serviceProvider.GetRequiredService<AuditingInterceptor>();
                     options.AddInterceptors(interceptor);
                 }
