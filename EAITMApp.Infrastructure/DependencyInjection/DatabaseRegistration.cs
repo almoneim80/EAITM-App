@@ -11,6 +11,7 @@ using EAITMApp.Infrastructure.Persistence.Transactions;
 using EAITMApp.Application.Persistence.Repositories;
 using EAITMApp.Infrastructure.Persistence.Repositories;
 using EAITMApp.Infrastructure.Persistence.Interceptors;
+using EAITMApp.Infrastructure.Persistence.Seeding;
 
 namespace EAITMApp.Infrastructure.DependencyInjection
 {
@@ -49,6 +50,9 @@ namespace EAITMApp.Infrastructure.DependencyInjection
 
             // Interceptors
             services.AddScoped<AuditingInterceptor>();
+
+            // Seeders
+            services.AddScoped<IDataSeeder, RoleSeeder>();
         }
 
         private static void ConfigureDbContextForProvider<TContext>(

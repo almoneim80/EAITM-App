@@ -1,4 +1,5 @@
-﻿using EAITMApp.SharedKernel.Errors.Registries;
+﻿using EAITMApp.Infrastructure.Persistence.Seeding;
+using EAITMApp.SharedKernel.Errors.Registries;
 using EAITMApp.SharedKernel.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +36,16 @@ namespace EAITMApp.Infrastructure.Persistence.Extensions
                         {
                             await context.Database.MigrateAsync();
                             logger.LogInformation("Migrations applied successfully for {ContextName}.", type.Name);
+
+                            logger.LogInformation("Starting data seeding...");
+                            var seeders = services.GetServices<IDataSeeder>().OrderBy(x => x.Order);
+                            foreach (var seeder in seeders)
+                            {
+                                logger.LogInformation("Running seeder: {SeederName}", seeder.GetType().Name);
+                                await seeder.SeedAsync();
+                            }
+
+                            logger.LogInformation("Database is ready and seeded.");
                         }
                         else
                         {
