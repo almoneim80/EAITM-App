@@ -55,6 +55,16 @@ namespace EAITMApp.Infrastructure.DependencyInjection
             services.AddScoped<IDataSeeder, RoleSeeder>();
         }
 
+        /// <summary>
+        /// Configures a <typeparamref name="TContext"/> with a dynamically resolved database provider and global settings.
+        /// Handles connection string building, naming conventions, performance behaviors (NoTracking), and auditing interceptors.
+        /// </summary>
+        /// <typeparam name="TContext">The type of the DbContext to configure.</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/> to add services to.</param>
+        /// <param name="settings">The root data store settings containing all database configurations.</param>
+        /// <param name="selectSettings">A delegate to select specific connection settings (e.g., Read vs. Write) from the root settings.</param>
+        /// <param name="noTracking">If set to <c>true</c>, configures the context to ignore change tracking for better read performance.</param>
+        /// <exception cref="InvalidOperationException">Thrown when the resolved provider does not implement <see cref="IEFCoreRelationalProvider"/>.</exception>
         private static void ConfigureDbContextForProvider<TContext>(
             IServiceCollection services, 
             DataStoresSettings settings, 
