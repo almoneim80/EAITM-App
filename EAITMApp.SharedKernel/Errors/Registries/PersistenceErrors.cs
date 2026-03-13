@@ -112,5 +112,21 @@ namespace EAITMApp.SharedKernel.Errors.Registries
             httpStatus: AppHttpStatus.InternalServerError,
             defaultMessage: $"{MessagePrefix}Failed to establish a connection to the data store.",
             isSafeToExpose: false);
+
+        public static readonly ErrorDescriptor PendingMigrations = new(
+        code: $"{CodePrefix}.DATABASE.PENDING_MIGRATIONS",
+        category: ErrorCategory.Infrastructure,
+        severity: ErrorSeverity.Critical,
+        httpStatus: AppHttpStatus.InternalServerError,
+        defaultMessage: "There are pending database migrations that must be applied before the application can start.",
+        isSafeToExpose: false);
+
+        public static readonly ErrorDescriptor MigrationFailed = new(
+            code: $"{CodePrefix}.DATABASE.MIGRATION_FAILED",
+            category: ErrorCategory.Infrastructure,
+            severity: ErrorSeverity.Critical,
+            httpStatus: AppHttpStatus.InternalServerError,
+            defaultMessage: "An unexpected error occurred while applying database migrations.",
+            isSafeToExpose: false);
     }
 }

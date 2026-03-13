@@ -7,6 +7,7 @@ using EAITMApp.Api.Middlewares;
 using EAITMApp.SharedKernel.Common;
 using EAITMApp.Infrastructure.Errors.Policies;
 using System.Text.Json.Serialization;
+using EAITMApp.Infrastructure.Persistence.Extensions;
 
 
 // Serializer dedicated to standardizing the method of storing and reading Guid values in MongoDB.
@@ -53,6 +54,9 @@ services.AddControllers()
 });
 
 var app = builder.Build();
+
+// ---  ›⁄Ì· Õ«—” «·„ÌÃ—Ì‘‰ ---
+await app.ApplyMigrationsAsync();
 
 // Error middleware
 app.UseMiddleware<CorrelationMiddleware>();
