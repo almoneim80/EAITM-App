@@ -2,10 +2,16 @@
 
 namespace EAITMApp.Infrastructure.Persistence.Seeding
 {
+    /// <summary>
+    /// Seeds the initial system roles into the database.
+    /// Ensures that essential roles like Admin, User, and Manager are present during system initialization.
+    /// </summary>
     public class RoleSeeder(WriteDbContext context) : IDataSeeder
     {
+        /// <inheritdoc/>
         public int Order => 1; // run first.
 
+        /// <inheritdoc/>
         public async Task SeedAsync(CancellationToken cancellationToken = default)
         {
             var roles = new List<string> { "Admin", "User", "Manager" };

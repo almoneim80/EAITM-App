@@ -34,9 +34,12 @@ namespace EAITMApp.Infrastructure.Persistence.Extensions
 
                         if (env.IsDevelopment())
                         {
+                            // do migrations
+                            logger.LogInformation("Migrations Starting for {ContextName}.", type.Name);
                             await context.Database.MigrateAsync();
                             logger.LogInformation("Migrations applied successfully for {ContextName}.", type.Name);
 
+                            // do seeding
                             logger.LogInformation("Starting data seeding...");
                             var seeders = services.GetServices<IDataSeeder>().OrderBy(x => x.Order);
                             foreach (var seeder in seeders)

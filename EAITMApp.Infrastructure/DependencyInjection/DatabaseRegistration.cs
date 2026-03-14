@@ -51,8 +51,8 @@ namespace EAITMApp.Infrastructure.DependencyInjection
             // Interceptors
             services.AddScoped<AuditingInterceptor>();
 
-            // Seeders
-            services.AddScoped<IDataSeeder, RoleSeeder>();
+            // seeders
+            services.AddSeeders();
         }
 
         /// <summary>
@@ -102,6 +102,25 @@ namespace EAITMApp.Infrastructure.DependencyInjection
                     options.AddInterceptors(interceptor);
                 }
             });
+        }
+
+        /// <summary>
+        /// Automatically registers all implementations of <see cref="IDataSeeder"/> from the assembly.
+        /// </summary>
+        /// <param name="services">The service collection to register seeders into.</param>
+        /// <returns>The <see cref="IServiceCollection"/> for method chaining.</returns>
+        private static IServiceCollection AddSeeders(this IServiceCollection services)
+        {
+            // Get all calsses that immplement IDataSeeder from current Assembly
+            var seeders = typeof(DatabaseRegistration).Assembly.GetTypes()
+                .Where(t => typeof(IDataSeeder).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
+
+            foreach(var seeder in seeders)
+            {
+                services.AddScoped(typeof(IDataSeeder), seeder);
+            }
+
+            return services;
         }
     }
 }

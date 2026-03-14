@@ -44,7 +44,7 @@ services.AddSwaggerGen();
 services.AddControllers()
 .AddJsonOptions(options =>
 {
-    // åĞÇ ÇáÓØÑ ÓíÍæá ÇáÜ Enum (ãËá Severity) Åáì äÕæÕ "Critical" ÈÏáÇğ ãä ÃÑŞÇã
+    // convert enum to string.
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 })
 .ConfigureApiBehaviorOptions(options =>
@@ -55,7 +55,7 @@ services.AddControllers()
 
 var app = builder.Build();
 
-// --- ÊİÚíá ÍÇÑÓ ÇáãíÌÑíÔä ---
+// Activite Migrations Guard
 await app.ApplyMigrationsAsync();
 
 // Error middleware
